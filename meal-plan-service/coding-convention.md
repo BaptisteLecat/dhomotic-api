@@ -159,5 +159,3 @@ export class ExampleEntity {
 ```
 
 By adhering to these guidelines, you will contribute to a clean and consistent codebase that is easy to navigate and maintain.
-
-By adhering to these guidelines, you will contribute to a clean and consistent codebase that is easy to navigate and maintain.
