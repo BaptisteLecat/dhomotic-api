@@ -1,10 +1,11 @@
-import { Inject, Injectable } from "@nestjs/common";
-import { UserRecord } from "firebase-admin/lib/auth/user-record";
-import { FirebaseProvider } from "../providers/firebase.provider";
+import {Inject, Injectable} from "@nestjs/common";
+import {UserRecord} from "firebase-admin/lib/auth/user-record";
+import {FirebaseProvider} from "../providers/firebase.provider";
 
 @Injectable()
 export class FirebaseAuthService {
-    constructor(@Inject(FirebaseProvider) private readonly firebaseProvider: FirebaseProvider) { }
+    constructor(@Inject(FirebaseProvider) private readonly firebaseProvider: FirebaseProvider) {
+    }
 
     async userEmailExists(email: string): Promise<boolean> {
         const user = await this.firebaseProvider.getAuth().getUserByEmail(email).catch(error => {
