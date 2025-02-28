@@ -41,7 +41,75 @@ Below is an example of how a module should be structured, using the `generation`
     - Define properties that map to Firestore fields.
 
 - **Converter**: `generation.converter.ts`
-    - Implement `toFirestore` and `fromFirestore` methods.
+    - Implement `toFirestore` and `fromFirestore` methods.                                                                  
+      =======
+### Adding a New Module
+
+To add a new module to the project, follow these steps, using the `generation` module as a reference:
+
+1. **Create Module Directory**: Create a new directory under `src/modules` for your module.
+
+2. **Define the Controller**:
+    - Create a controller file (e.g., `example.controller.ts`).
+    - Use decorators like `@Controller`, `@Get`, `@Post` to define routes.
+    - Inject the service using the constructor.
+
+   Example:
+   ```typescript                                                                                                            
+   @Controller('example')                                                                                                   
+   export class ExampleController {                                                                                         
+     constructor(private readonly exampleService: ExampleService) {}                                                        
+                                                                                                                            
+     @Get()                                                                                                                 
+     getExample(): string {                                                                                                 
+       return this.exampleService.getExample();                                                                             
+     }                                                                                                                      
+   }                                                                                                                        
+   ```                                                                                                                      
+
+3. **Implement the Service**:
+    - Create a service file (e.g., `example.service.ts`).
+    - Implement business logic and interact with Firestore using injected providers.
+
+   Example:
+   ```typescript                                                                                                            
+   @Injectable()                                                                                                            
+   export class ExampleService {                                                                                            
+     constructor(@Inject(FirebaseProvider) private readonly firestoreProvider: FirebaseProvider) {}                         
+                                                                                                                            
+     getExample(): string {                                                                                                 
+       return 'Example data';                                                                                               
+     }                                                                                                                      
+   }                                                                                                                        
+   ```                                                                                                                      
+
+4. **Create DTOs**:
+    - Define DTOs for data validation and transfer (e.g., `create-example.dto.ts`).
+    - Use decorators like `@ApiProperty`, `@IsNotEmpty`, `@IsString` for validation.
+
+5. **Define Entities**:
+    - Create entity files to represent database entities (e.g., `example.entity.ts`).
+    - Implement methods like `toJson`, `fromJson`, and `toFirestoreDocument`.
+
+6. **Implement Converters**:
+    - Create a converter file (e.g., `example.converter.ts`).
+    - Implement `toFirestore` and `fromFirestore` methods to handle data conversion.
+
+7. **Register the Module**:
+    - Create a module file (e.g., `example.module.ts`).
+    - Register controllers, providers, and any other dependencies.
+
+   Example:
+   ```typescript                                                                                                            
+   @Module({                                                                                                                
+     controllers: [ExampleController],                                                                                      
+     providers: [ExampleService, ExampleConverter, FirebaseProvider],                                                       
+   })                                                                                                                       
+   export class ExampleModule {}                                                                                            
+   ```                                                                                                                      
+
+8. **Update App Module**:
+    - Import and add the new module to the `app.module.ts` to ensure it is part of the application.
 
 ### Authentication Logic
 
