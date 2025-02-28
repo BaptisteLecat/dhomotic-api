@@ -2,16 +2,16 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from '../app.module';
 
 const config = new DocumentBuilder()
-  .setTitle('API ChatGPT')
-  .setDescription('API ChatGPT pour les entreprises')
+  .setTitle('Meal Plan Service')
+  .setDescription('API for meal planning')
   .setVersion('1.0')
   .addTag('Discussions')
   .setExternalDoc('Postman Collection', '/docs-json')
   .build();
 
 const options = new DocumentBuilder()
-  .setTitle('API ChatGPT')
-  .setDescription('API ChatGPT pour les entreprises')
+  .setTitle('Meal Plan Service')
+  .setDescription('API for meal planning')
   .setVersion('1.0')
   .addTag('Discussions')
   .setExternalDoc('Postman Collection', '/docs-json')

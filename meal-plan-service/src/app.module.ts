@@ -18,6 +18,6 @@ imports: [
   ExampleModule,
   ],
   controllers: [],
-  providers: [PromptGeneratorService, FirebaseProvider, AuthService, FirebaseAuthService],
+  providers: [FirebaseProvider, AuthService, FirebaseAuthService],
 })
 export class AppModule {}

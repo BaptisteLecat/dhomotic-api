@@ -1,6 +1,7 @@
 import * as admin from 'firebase-admin';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import * as process from "node:process";
 
 @Injectable()
 export class FirebaseProvider {
@@ -20,7 +21,7 @@ export class FirebaseProvider {
       // Initialize Firebase Admin SDK
       admin.initializeApp(
         {
-          projectId: "weatherapp-journey",
+          projectId: process.env.GCP_PROJECT_ID,
         }
       );
     }
