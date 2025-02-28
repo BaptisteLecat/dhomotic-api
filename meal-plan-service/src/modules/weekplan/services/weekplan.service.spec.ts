@@ -4,7 +4,9 @@ import { FirebaseProvider } from '../../../providers/firebase.provider';
 import { WeekplanConverter } from '../converters/weekplan.converter';
 import { Weekplan } from '../entities/weekplan.entity';
 import * as admin from 'firebase-admin';
-import { initializeTestApp, loadFirestoreRules, clearFirestoreData } from '@firebase/rules-unit-testing';
+import { initializeTestApp, loadFirestoreRules, clearFirestoreData, assertFails, assertSucceeds } from '@firebase/rules-unit-testing';
+import * as fs from 'fs';
+import { Weekplan } from '../entities/weekplan.entity';
 
 describe('WeekplanService', () => {
     let service: WeekplanService;
@@ -16,6 +18,12 @@ describe('WeekplanService', () => {
         await loadFirestoreRules({
             projectId: 'test-project',
             rules: fs.readFileSync('firestore.rules', 'utf8'),
+        });
+        await firestore.collection('houses').doc('houseId').collection('weekplans').doc('weekplanId').set({
+            id: 'weekplanId',
+            createdAt: admin.firestore.Timestamp.now(),
+            cart: [],
+            menu: [],
         });
     });
 
