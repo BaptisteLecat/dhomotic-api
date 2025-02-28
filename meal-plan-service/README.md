@@ -1,90 +1,49 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Meal Plan Service
 
-[![codecov](https://codecov.io/gh/BaptisteLecat/weather-journey-image-api/graph/badge.svg?token=JBOHVOITTC)](https://codecov.io/gh/BaptisteLecat/weather-journey-image-api)
+## Coding Guidelines
 
-## Description
+This document outlines the coding conventions and structure for developing modules within the Meal Plan Service. Following these guidelines will ensure consistency and maintainability across the codebase.
 
-Weather Journey Image API is a RESTful API that generates images based on the weather conditions of a location. It uses the OpenAI API to generate images based on the weather conditions of a location. The API is built using NestJS and is deployed on Google Cloud Run.
+### Module Structure
 
-## Requirements
+Each module should be organized into the following components:
 
-This project requires the following:
+1. **Controller**: Handles incoming requests and returns responses to the client. It should use decorators to define routes and HTTP methods.
 
-- Google Cloud Platform account
-- OpenAI API Key
-- Firebase Admin SDK Key -> Firebase Auth and Firestore
+2. **Service**: Contains the business logic and interacts with the database or other services. It should be injected into the controller.
 
-## Installation
+3. **DTO (Data Transfer Object)**: Defines the shape of data sent over the network. Use decorators to enforce validation rules.
 
-```bash
-$ npm install
-```
+4. **Entity**: Represents a database entity. It should map to a Firestore document or collection.
 
-## Running the app
+5. **Converter**: Implements the `FirestoreDataConverter` interface to convert between Firestore documents and entities.
 
-```bash
+### Example Module Structure
 
-export NODE_ENV=development  
+Below is an example of how a module should be structured, using the `generation` module as a reference:
 
-# development
-$ npm run start
+- **Controller**: `generation.controller.ts`
+  - Use decorators like `@Controller`, `@Get`, `@Post` to define routes.
+  - Inject the service using the constructor.
 
-# watch mode
-$ npm run start:dev
+- **Service**: `generations.service.ts`
+  - Implement business logic.
+  - Interact with Firestore using injected providers.
 
-# production mode
-$ npm run start:prod
-```
+- **DTO**: `create-generation.dto.ts`
+  - Use decorators like `@ApiProperty`, `@IsNotEmpty`, `@IsString` for validation.
 
-## Test
+- **Entity**: `generation.entity.ts`
+  - Define properties that map to Firestore fields.
 
-### Generate a JWT token with Firebase Emulator
+- **Converter**: `generation.converter.ts`
+  - Implement `toFirestore` and `fromFirestore` methods.
 
-Start the Firebase Emulator and generate a JWT token for testing.
+### General Conventions
 
-Reference : https://stackoverflow.com/a/66343248/19101705
+- Use dependency injection to manage service dependencies.
+- Use NestJS decorators for routing, validation, and dependency injection.
+- Follow the naming conventions for files and classes (e.g., `PascalCase` for classes, `kebab-case` for filenames).
+- Ensure all modules are registered in the `app.module.ts`.
 
-
-```bash
-$ npm run firebase:emulator
-$ curl -X POST \  'http://127.0.0.1:9099/identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=key' \
-    -H 'content-type: application/json' \
-    -d '{ "email":"alice@gmail.com", "password":"alicealice", "returnSecureToken":true }'
-
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Deploy to GCP
-
-```bash
-# build
-docker build -t europe-west1-docker.pkg.dev/weatherapp-journey/weather-generation-api/generation-api:0.0.1 --platform linux/amd64 .
-
-# push
-docker push europe-west1-docker.pkg.dev/weatherapp-journey/weather-generation-api/generation-api:0.0.1
-
-# deploy
-gcloud run deploy weather-generation-api \
-    --image europe-west1-docker.pkg.dev/weatherapp-journey/weather-generation-api/generation-api:0.0.1 \
-    --platform managed \
-    --region europe-west1 \
-    --allow-unauthenticated \
-    --min-instances 1 \
-    --max-instances 2 \
-    --memory 512Mi \
-    --cpu 1 \
-    --port 3000 \
-    --set-env-vars "OPENAI_API_KEY=YOUR_KEY" \
-    --service-account=weather-generation-api-runner@weatherapp-journey.iam.gserviceaccount.com
-```
+By adhering to these guidelines, you will contribute to a clean and consistent codebase that is easy to navigate and maintain.
