@@ -57,6 +57,37 @@ The authentication logic in this project is implemented using JWT and API Key st
   - The `ApiKeyAuthGuard` in `api-key-auth.guard.ts` is used to protect routes by checking the validity of the API key.
   - The `AuthService` validates the API key against a predefined value in the environment variables.
 
+#### Implementing Authentication in a Module
+
+To implement authentication in a module, follow these steps:
+
+1. **Use Guards**: Apply `@UseGuards(JwtAuthGuard, ApiKeyAuthGuard)` to your controller or specific routes to enforce authentication.
+
+   ```typescript
+   @UseGuards(JwtAuthGuard, ApiKeyAuthGuard)
+   @Controller('example')
+   export class ExampleController {
+     // Your routes here
+   }
+   ```
+
+2. **Accessing User Data**: Use the `@Request()` decorator to access the authenticated user's data within your route handlers.
+
+   ```typescript
+   @Get()
+   async getData(@Request() req): Promise<any> {
+     const user = req.user; // Access the authenticated user
+     // Use user data to fetch additional information from Firestore
+   }
+   ```
+
+3. **Fetching User Data from Firestore**: Use the `AuthService` to verify tokens and fetch user data.
+
+   ```typescript
+   const userId = await this.authService.verifyIdToken(req.headers.authorization);
+   const user = await this.userService.findOne(userId);
+   ```
+
 ### Use of Converters
 
 Converters are used to map Firestore documents to TypeScript entities and vice versa. This ensures type safety and consistency when interacting with Firestore.
@@ -66,5 +97,21 @@ Converters are used to map Firestore documents to TypeScript entities and vice v
   - The `toFirestore` method converts an entity to a Firestore document.
   - The `fromFirestore` method converts a Firestore document to an entity.
   - Converters are used in services to seamlessly interact with Firestore, ensuring that data is correctly formatted and parsed.
+
+#### Example of a Converter
+
+```typescript
+@Injectable()
+export class ExampleConverter implements FirestoreDataConverter<ExampleEntity> {
+    toFirestore(modelObject: ExampleEntity): firebase.firestore.DocumentData {
+        return modelObject.toFirestoreDocument();
+    }
+    fromFirestore(snapshot: firebase.firestore.QueryDocumentSnapshot<firebase.firestore.DocumentData>): ExampleEntity {
+        const id = snapshot.id;
+        const data = snapshot.data();
+        return ExampleEntity.fromFirestoreDocument(id, data);
+    }
+}
+```
 
 By adhering to these guidelines, you will contribute to a clean and consistent codebase that is easy to navigate and maintain.
