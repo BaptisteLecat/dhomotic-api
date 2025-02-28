@@ -43,12 +43,28 @@ Below is an example of how a module should be structured, using the `generation`
 - **Converter**: `generation.converter.ts`
     - Implement `toFirestore` and `fromFirestore` methods.
 
-### General Conventions
+### Authentication Logic
 
-- Use dependency injection to manage service dependencies.
-- Use NestJS decorators for routing, validation, and dependency injection.
-- Follow the naming conventions for files and classes (e.g., `PascalCase` for classes, `kebab-case` for filenames).
-- Ensure all modules are registered in the `app.module.ts`.
+The authentication logic in this project is implemented using JWT and API Key strategies. Here's how it works:
 
-By adhering to these guidelines, you will contribute to a clean and consistent codebase that is easy to navigate and        
-maintain.
+- **JWT Strategy**: 
+  - Implemented in `jwt.strategy.ts`, it uses the `passport-firebase-jwt` strategy to validate Firebase JWT tokens.
+  - The `JwtAuthGuard` in `jwt-auth.guard.ts` is used to protect routes by checking the validity of the JWT token.
+  - The `AuthService` provides methods to verify tokens and retrieve user information from Firebase.
+
+- **API Key Strategy**:
+  - Implemented in `apikey.strategy.ts`, it uses the `passport-headerapikey` strategy to validate API keys.
+  - The `ApiKeyAuthGuard` in `api-key-auth.guard.ts` is used to protect routes by checking the validity of the API key.
+  - The `AuthService` validates the API key against a predefined value in the environment variables.
+
+### Use of Converters
+
+Converters are used to map Firestore documents to TypeScript entities and vice versa. This ensures type safety and consistency when interacting with Firestore.
+
+- **FirestoreDataConverter**:
+  - Each entity has a corresponding converter that implements the `FirestoreDataConverter` interface.
+  - The `toFirestore` method converts an entity to a Firestore document.
+  - The `fromFirestore` method converts a Firestore document to an entity.
+  - Converters are used in services to seamlessly interact with Firestore, ensuring that data is correctly formatted and parsed.
+
+By adhering to these guidelines, you will contribute to a clean and consistent codebase that is easy to navigate and maintain.
