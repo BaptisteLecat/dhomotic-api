@@ -6,14 +6,12 @@ import { swaggerOptions } from './config/swagger.config';
 import * as cors from 'cors';
 import { config } from 'dotenv';
 import { VersioningType } from '@nestjs/common';
-import { CustomLogging } from './modules/logging/custom-logging';
 config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     bufferLogs: true,
   });
-  app.useLogger(app.get(CustomLogging));
   app.use(cors.default());
   app.useGlobalPipes(
     new ValidationPipe({
