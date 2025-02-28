@@ -98,20 +98,66 @@ Converters are used to map Firestore documents to TypeScript entities and vice v
   - The `fromFirestore` method converts a Firestore document to an entity.
   - Converters are used in services to seamlessly interact with Firestore, ensuring that data is correctly formatted and parsed.
 
-#### Example of a Converter
+#### Implementing Converters in Services
 
+When implementing a service, inject the appropriate converter to handle Firestore operations. This centralizes the conversion logic and ensures consistency.
+
+Example:
 ```typescript
 @Injectable()
-export class ExampleConverter implements FirestoreDataConverter<ExampleEntity> {
-    toFirestore(modelObject: ExampleEntity): firebase.firestore.DocumentData {
-        return modelObject.toFirestoreDocument();
-    }
-    fromFirestore(snapshot: firebase.firestore.QueryDocumentSnapshot<firebase.firestore.DocumentData>): ExampleEntity {
-        const id = snapshot.id;
-        const data = snapshot.data();
-        return ExampleEntity.fromFirestoreDocument(id, data);
-    }
+export class ExampleService {
+  constructor(
+    @Inject(FirebaseProvider) private readonly firestoreProvider: FirebaseProvider,
+    private exampleConverter: ExampleConverter
+  ) {}
+
+  async findOne(id: string): Promise<ExampleEntity | undefined> {
+    const doc = await this.firestoreProvider.getFirestore()
+      .collection('examples')
+      .doc(id)
+      .withConverter(this.exampleConverter)
+      .get();
+    return doc.exists ? this.exampleConverter.fromFirestoreDocumentSnapshot(doc) : undefined;
+  }
 }
 ```
+
+### Entity Methods: `toJson`, `fromJson`, `toFirestoreDocument`
+
+Entities should implement methods like `toJson`, `fromJson`, and `toFirestoreDocument` to facilitate conversion between different data formats.
+
+- **toJson**: Converts the entity to a JSON object, useful for API responses.
+- **fromJson**: Creates an entity instance from a JSON object, useful for parsing incoming data.
+- **toFirestoreDocument**: Converts the entity to a Firestore document format, used by converters.
+
+These methods ensure that data is consistently formatted and parsed, reducing errors and improving maintainability.
+
+#### Example of Entity Methods
+
+```typescript
+export class ExampleEntity {
+  id: string;
+  name: string;
+
+  constructor(id: string, name: string) {
+    this.id = id;
+    this.name = name;
+  }
+
+  static fromJson(data: any): ExampleEntity {
+    return new ExampleEntity(data.id, data.name);
+  }
+
+  toJson(): any {
+    return { id: this.id, name: this.name };
+  }
+
+  toFirestoreDocument(): any {
+    return { id: this.id, name: this.name };
+  }
+}
+```
+
+By adhering to these guidelines, you will contribute to a clean and consistent codebase that is easy to navigate and maintain.
 
 By adhering to these guidelines, you will contribute to a clean and consistent codebase that is easy to navigate and maintain.
