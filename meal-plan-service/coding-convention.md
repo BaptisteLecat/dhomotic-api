@@ -45,7 +45,11 @@ Below is an example of how a module should be structured, using the `generation`
 
 ### Authentication Logic
 
-The authentication logic in this project is implemented using JWT and API Key strategies. Here's how it works:
+The authentication logic in this project is implemented using Firebase Authentication, JWT, and API Key strategies. Here's how it works:
+
+- **Firebase Authentication**:
+  - Firebase Authentication is used to manage user identities and provide secure authentication.
+  - The `AuthService` interacts with Firebase to verify tokens and retrieve user information.
 
 - **JWT Strategy**: 
   - Implemented in `jwt.strategy.ts`, it uses the `passport-firebase-jwt` strategy to validate Firebase JWT tokens.
@@ -87,6 +91,37 @@ To implement authentication in a module, follow these steps:
    const userId = await this.authService.verifyIdToken(req.headers.authorization);
    const user = await this.userService.findOne(userId);
    ```
+
+#### User Context in Request
+
+The authenticated user is added to the request context, allowing easy access to user information in controllers. This is achieved by the `PassportModule` and the `JwtStrategy`, which validate the token and attach the user to the request.
+
+- **AuthUser Entity**: The `AuthUser` entity represents the user data added to the request. It includes fields like `id`, `role`, and `disabled` status.
+
+Example of `AuthUser`:
+```typescript
+export class AuthUser {
+    id: string;
+    role: string;
+    disabled: boolean;
+
+    constructor(id: string, role: string, disabled: boolean = false) {
+        this.id = id;
+        this.role = role;
+        this.disabled = disabled;
+    }
+
+    static fromFirebaseUser(firebaseUser: any): AuthUser {
+        return new AuthUser(firebaseUser.uid, "", firebaseUser.disabled);
+    }
+
+    static fromJson(json: any): AuthUser {
+        return new AuthUser(json.id, json.role, json.disabled);
+    }
+}
+```
+
+The `AuthUser` entity is used to ensure that only authenticated users can access certain routes, and it provides a consistent way to access user information across the application.
 
 ### Use of Converters
 
