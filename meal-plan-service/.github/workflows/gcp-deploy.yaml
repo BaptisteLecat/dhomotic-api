@@ -1,0 +1,54 @@
+name: Docker
+
+on:
+  push:
+    branches: [prod]
+  pull_request:
+    branches: [prod]
+
+jobs:
+  deploy:
+    permissions:
+      contents: "read"
+      id-token: "write"
+    environment: prod
+    name: Setup Gcloud Account
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: europe-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_APP_NAME }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - id: auth
+        name: Login
+        uses: google-github-actions/auth@v1
+        with:
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER_ID }}
+          service_account: ${{ secrets.WIP_EMAIL }}
+
+      - name: Configure gcloud
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      - name: Configure Docker
+        run: gcloud auth configure-docker europe-west1-docker.pkg.dev --quiet
+
+      - name: Use NPM to install dependencies
+        uses: actions/setup-node@v1
+        with:
+          node-version: "20.x"
+      - run: npm install
+
+      - name: Build application
+        run: npm run build
+
+      - name: Build Docker image
+        run: docker build -f Dockerfile -t europe-west1-docker.pkg.dev/weatherapp-journey/weather-generation-api/generation-api:0.0.1 .
+
+      - name: Push Docker image
+        run: docker push europe-west1-docker.pkg.dev/weatherapp-journey/weather-generation-api/generation-api:0.0.1
+
+      - name: Deploy Docker image
+        run: gcloud run deploy weather-generation-api --image europe-west1-docker.pkg.dev/weatherapp-journey/weather-generation-api/generation-api:0.0.1 --platform managed --region europe-west1 --allow-unauthenticated --min-instances 1 --max-instances 2 \--memory 512Mi --cpu 1 --port 3000 --set-env-vars "OPENAI_API_KEY=${{secrets.OPENAI_API_KEY}},DISCORD_SERVER_ID=${{secrets.DISCORD_SERVER_ID}},DISCORD_CHANNEL_ID=${{secrets.DISCORD_CHANNEL_ID}},DISCORD_SALAI_TOKEN=${{secrets.DISCORD_SALAI_TOKEN}},API_KEY=${{secrets.API_KEY}}" --service-account=${{ secrets.CLOUD_RUN_EXECUTOR_SERVICE_ACCOUNT }}
