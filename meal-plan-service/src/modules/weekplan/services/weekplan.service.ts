@@ -2,6 +2,7 @@ import {Inject, Injectable} from '@nestjs/common';
 import {WeekplanConverter} from '../converters/weekplan.converter';
 import {FirebaseProvider} from '../../../providers/firebase.provider';
 import {Weekplan} from '../entities/weekplan.entity';
+import {CreateWeekplanDto} from "../dto/create-weekplan.dto";
 
 @Injectable()
 export class WeekplanService {
@@ -40,5 +41,19 @@ export class WeekplanService {
             return undefined;
         }
         return this.weekPlanConverter.fromFirestoreDocumentSnapshot(weekPlan);
+    }
+
+    async create(createWeekplanDto: CreateWeekplanDto, houseId: string): Promise<Weekplan> {
+        const id = this.firestoreProvider.getFirestore().collection('houses').doc(houseId).collection(WeekplanService.collection).doc().id;
+        const weekPlan = new Weekplan(id);
+        const weekPlanRef = await this.firestoreProvider
+            .getFirestore()
+            .collection('houses')
+            .doc(houseId)
+            .collection(WeekplanService.collection)
+            .doc(id)
+            .withConverter(this.weekPlanConverter)
+            .set(weekPlan);
+        return weekPlan;
     }
 }

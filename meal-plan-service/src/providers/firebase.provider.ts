@@ -17,7 +17,7 @@ export class FirebaseProvider {
         } else {
             // Set the Firebase Auth emulator host : https://stackoverflow.com/a/77929815/19101705
             process.env['FIREBASE_AUTH_EMULATOR_HOST'] = '127.0.0.1:9099';
-            process.env['FIRESTORE_EMULATOR_HOST'] = '127.0.0.1:8080';
+            process.env['FIRESTORE_EMULATOR_HOST'] = '127.0.0.1:8089';
 
             // Initialize Firebase Admin SDK
             admin.initializeApp(
