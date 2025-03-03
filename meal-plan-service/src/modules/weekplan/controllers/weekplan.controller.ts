@@ -1,9 +1,10 @@
-import {Body, Controller, Get, Inject, Param, Post, UseGuards} from '@nestjs/common';
+import {Body, Controller, Get, Inject, Param, Post, Put, UseGuards} from '@nestjs/common';
 import {JwtAuthGuard} from "../../auth/guard/jwt-auth.guard";
 import {ApiKeyAuthGuard} from "../../auth/guard/api-key-auth.guard";
 import {ApiBearerAuth, ApiBody, ApiParam, ApiTags} from "@nestjs/swagger";
 import {WeekplanService} from "../services/weekplan.service";
 import {CreateWeekplanDto} from "../dto/create-weekplan.dto";
+import {AddCartProductDto} from "../dto/add-cartProduct.dto";
 
 @UseGuards(ApiKeyAuthGuard, JwtAuthGuard)
 @ApiTags('WeekPlans')
@@ -44,5 +45,17 @@ export class WeekPlanController {
         @Body() createWeekplanDto: CreateWeekplanDto,
     ) {
         return this.weekplanService.create(createWeekplanDto, houseId);
+    }
+
+    @Put(':id/cart')
+    @ApiParam({name: 'houseId', type: String})
+    @ApiParam({name: 'id', type: String})
+    @ApiBody({ type: AddCartProductDto })
+    async addCartProduct(
+        @Param('id') id: string,
+        @Param('houseId') houseId: string,
+        @Body() addCartProductDto: AddCartProductDto,
+    ) {
+        return this.weekplanService.addCartProduct(id, houseId, addCartProductDto);
     }
 }
