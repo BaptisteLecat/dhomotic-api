@@ -1,7 +1,7 @@
 import {Timestamp} from '@google-cloud/firestore';
 import {MealProductItem} from './mealProductItem.entity';
 
-export class Meal {
+export class MenuMeal {
     id: string;
     createdAt: Timestamp;
     name: string;
@@ -22,8 +22,8 @@ export class Meal {
         this.mealProductItem = mealProductItem;
     }
 
-    static fromFirestoreDocument(id: any, data: any): Meal {
-        return new Meal(
+    static fromFirestoreDocument(id: any, data: any): MenuMeal {
+        return new MenuMeal(
             id,
             data.createdAt,
             data.name,
@@ -37,8 +37,8 @@ export class Meal {
         );
     }
 
-    static fromJson(data: any): Meal {
-        return new Meal(
+    static fromJson(data: any): MenuMeal {
+        return new MenuMeal(
             data.id,
             data.createdAt,
             data.name,

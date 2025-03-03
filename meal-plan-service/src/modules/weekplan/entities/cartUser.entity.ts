@@ -1,20 +1,17 @@
 export class CartUser {
     id: string;
-    lastname: string;
-    firstname: string;
+    displayName: string;
     email: string;
     photoURL: string;
 
     public constructor(
         id: string,
-        lastname: string,
-        firstname: string,
+        displayName: string,
         email: string,
         photoURL: string,
     ) {
         this.id = id;
-        this.lastname = lastname;
-        this.firstname = firstname;
+        this.displayName = displayName;
         this.email = email;
         this.photoURL = photoURL;
     }
@@ -22,8 +19,7 @@ export class CartUser {
     static fromFirestoreDocument(id: any, data: any): CartUser {
         return new CartUser(
             id,
-            data.lastname,
-            data.firstname,
+            data.displayName,
             data.email,
             data.photoURL,
         );
@@ -32,8 +28,7 @@ export class CartUser {
     static fromJson(data: any): CartUser {
         return new CartUser(
             data.id,
-            data.lastname,
-            data.firstname,
+            data.displayName,
             data.email,
             data.photoURL,
         );
@@ -42,8 +37,7 @@ export class CartUser {
     toFirestoreDocument(): any {
         return {
             id: this.id,
-            lastname: this.lastname,
-            firstname: this.firstname,
+            displayName: this.displayName,
             email: this.email,
             photoURL: this.photoURL,
         };
@@ -52,8 +46,7 @@ export class CartUser {
     toJson(): any {
         return {
             id: this.id,
-            lastname: this.lastname,
-            firstname: this.firstname,
+            displayName: this.displayName,
             email: this.email,
             photoURL: this.photoURL,
         };

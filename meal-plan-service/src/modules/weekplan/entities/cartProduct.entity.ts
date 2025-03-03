@@ -4,48 +4,48 @@ import {CartUser} from "./cartUser.entity";
 
 export class CartProduct {
     id: string;
-    createdAt: Timestamp;
-    checkedAt: Timestamp;
     quantity: number;
-    user: CartUser;
-    productItem: CartProductItem;
+    cartUser: CartUser;
+    cartProductItem: CartProductItem;
+    checkedAt?: Timestamp;
+    createdAt: Timestamp;
 
-    public constructor(id: string, createdAt: Timestamp = Timestamp.now(), checkedAt: Timestamp = Timestamp.now(), quantity: number, user: CartUser, productItem: CartProductItem) {
+    public constructor(id: string, quantity: number, cartUser: CartUser, cartProductItem: CartProductItem, checkedAt?: Timestamp, createdAt: Timestamp = Timestamp.now()) {
         this.id = id;
-        this.createdAt = createdAt;
-        this.checkedAt = checkedAt;
         this.quantity = quantity;
-        this.user = user;
-        this.productItem = productItem;
+        this.cartUser = cartUser;
+        this.cartProductItem = cartProductItem;
+        this.checkedAt = checkedAt;
+        this.createdAt = createdAt;
     }
 
     static fromFirestoreDocument(id: any, data: any): CartProduct {
-        return new CartProduct(id, data.createdAt, data.checkedAt, data.quantity, CartUser.fromFirestoreDocument(data.user.id, data.user), CartProductItem.fromFirestoreDocument(data.productItem.id, data.productItem));
+        return new CartProduct(id, data.quantity, CartUser.fromFirestoreDocument(data.cartUser.id, data.cartUser), CartProductItem.fromFirestoreDocument(data.cartProductItem.id, data.cartProductItem), data.checkedAt, data.createdAt);
     }
 
     static fromJson(data: any): CartProduct {
-        return new CartProduct(data.id, data.createdAt, data.checkedAt, data.quantity, CartUser.fromJson(data.user), CartProductItem.fromJson(data.productItem));
+        return new CartProduct(data.id, data.quantity, CartUser.fromJson(data.cartUser), CartProductItem.fromJson(data.cartProductItem), data.checkedAt, data.createdAt);
     }
 
     toFirestoreDocument(): any {
         return {
             id: this.id,
-            createdAt: this.createdAt,
-            checkedAt: this.checkedAt,
             quantity: this.quantity,
-            user: this.user.toFirestoreDocument(),
-            productItem: this.productItem.toFirestoreDocument(),
+            cartUser: this.cartUser.toFirestoreDocument(),
+            cartProductItem: this.cartProductItem.toFirestoreDocument(),
+            checkedAt: this.checkedAt,
+            createdAt: this.createdAt,
         };
     }
 
     toJson(): any {
         return {
             id: this.id,
-            createdAt: this.createdAt,
-            checkedAt: this.checkedAt,
             quantity: this.quantity,
-            user: this.user.toJson(),
-            productItem: this.productItem.toJson(),
+            cartUser: this.cartUser.toJson(),
+            cartProductItem: this.cartProductItem.toJson(),
+            checkedAt: this.checkedAt,
+            createdAt: this.createdAt,
         };
     }
 }
