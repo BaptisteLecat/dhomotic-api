@@ -117,24 +117,54 @@ describe('WeekplanService', () => {
         expect(mockCollection).toHaveBeenCalledWith('weekplans');
     });
 
-    it('should add a new cart product', async () => {
-        const cartProduct = await service.addCartProduct('weekplanId', 'houseId', {
-            userId: 'userUid',
-            productItemId: 'productItemId',
-            quantity: 1,
-        });
-        expect(cartProduct).toBeInstanceOf(CartProduct);
+    describe('Add cart product:', () => {
 
-        // Vérification de l'effet final : le weekplan récupéré doit contenir le nouveau cartProduct.
-        const updatedWeekplan = await service.findOne('weekplanId', 'houseId');
-        expect(updatedWeekplan.cart).toHaveLength(1);
-        expect(updatedWeekplan.cart[0]).toMatchObject({
-            id: 'productItemId',
-            quantity: 1,
+        it('should add a new cart product', async () => {
+            const cartProduct = await service.addCartProduct('weekplanId', 'houseId', {
+                userId: 'userUid',
+                productItemId: 'productItemId',
+                quantity: 1,
+            });
+            expect(cartProduct).toBeInstanceOf(CartProduct);
+
+            // Vérification de l'effet final : le weekplan récupéré doit contenir le nouveau cartProduct.
+            const updatedWeekplan = await service.findOne('weekplanId', 'houseId');
+            expect(updatedWeekplan.cart).toHaveLength(1);
+            expect(updatedWeekplan.cart[0]).toMatchObject({
+                id: 'productItemId',
+                quantity: 1,
+            });
         });
+
+        it('should update the quantity of an existing cart product', async () => {
+            // Ajout d'un produit au panier
+            await service.addCartProduct('weekplanId', 'houseId', {
+                userId: 'userUid',
+                productItemId: 'productItemId',
+                quantity: 1,
+            });
+
+            // Mise à jour de la quantité du produit
+            const cartProduct = await service.addCartProduct('weekplanId', 'houseId', {
+                userId: 'userUid',
+                productItemId: 'productItemId',
+                quantity: 2,
+            });
+
+            expect(cartProduct).toBeInstanceOf(CartProduct);
+
+            // Vérification de l'effet final : le weekplan récupéré doit contenir le cartProduct mis à jour.
+            const updatedWeekplan = await service.findOne('weekplanId', 'houseId');
+            expect(updatedWeekplan.cart).toHaveLength(1);
+            expect(updatedWeekplan.cart[0]).toMatchObject({
+                id: 'productItemId',
+                quantity: 2,
+            });
+        });
+
     });
 
-    it('should update the quantity of an existing cart product', async () => {
+    it('should remove a cart product', async () => {
         // Ajout d'un produit au panier
         await service.addCartProduct('weekplanId', 'houseId', {
             userId: 'userUid',
@@ -142,22 +172,13 @@ describe('WeekplanService', () => {
             quantity: 1,
         });
 
-        // Mise à jour de la quantité du produit
-        const cartProduct = await service.addCartProduct('weekplanId', 'houseId', {
-            userId: 'userUid',
-            productItemId: 'productItemId',
-            quantity: 2,
-        });
+        // Suppression du produit du panier
+        await service.removeCartProduct('weekplanId', 'houseId', 'productItemId');
 
-        expect(cartProduct).toBeInstanceOf(CartProduct);
-
-        // Vérification de l'effet final : le weekplan récupéré doit contenir le cartProduct mis à jour.
+        // Vérification de l'effet final : le weekplan récupéré doit être vide.
         const updatedWeekplan = await service.findOne('weekplanId', 'houseId');
-        expect(updatedWeekplan.cart).toHaveLength(1);
-        expect(updatedWeekplan.cart[0]).toMatchObject({
-            id: 'productItemId',
-            quantity: 2,
-        });
+        expect(updatedWeekplan.cart).toHaveLength(0);
+
     });
 
 });

@@ -1,4 +1,4 @@
-import {Body, Controller, Get, Inject, Param, Post, Put, UseGuards} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Inject, Param, Post, Put, UseGuards} from '@nestjs/common';
 import {JwtAuthGuard} from "../../auth/guard/jwt-auth.guard";
 import {ApiKeyAuthGuard} from "../../auth/guard/api-key-auth.guard";
 import {ApiBearerAuth, ApiBody, ApiParam, ApiTags} from "@nestjs/swagger";
@@ -57,5 +57,17 @@ export class WeekPlanController {
         @Body() addCartProductDto: AddCartProductDto,
     ) {
         return this.weekplanService.addCartProduct(id, houseId, addCartProductDto);
+    }
+
+    @Delete(':id/cart/:cartProductId')
+    @ApiParam({name: 'houseId', type: String})
+    @ApiParam({name: 'id', type: String})
+    @ApiParam({name: 'cartProductId', type: String})
+    async removeCartProduct(
+        @Param('id') id: string,
+        @Param('houseId') houseId: string,
+        @Param('cartProductId') cartProductId: string,
+    ) {
+        return this.weekplanService.removeCartProduct(id, houseId, cartProductId);
     }
 }

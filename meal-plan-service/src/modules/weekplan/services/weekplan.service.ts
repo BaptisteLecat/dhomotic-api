@@ -127,4 +127,25 @@ export class WeekplanService {
             .set(weekPlan);
         return cartProduct;
     }
+
+    async removeCartProduct(id: string, houseId: string, cartProductId: string): Promise<void> {
+        //Step 1: Get weekplan
+        let weekPlan = await this.findOne(id, houseId);
+        if (!weekPlan) {
+            throw new Error(`Weekplan with id ${id} not found`);
+        }
+
+        //Step 2: Delete the CartProduct
+        weekPlan.cart = weekPlan.cart.filter((cartProduct) => cartProduct.id !== cartProductId);
+
+        //Step 3: Save the Weekplan
+        await this.firestoreProvider
+            .getFirestore()
+            .collection('houses')
+            .doc(houseId)
+            .collection(WeekplanService.collection)
+            .doc(id)
+            .withConverter(this.weekPlanConverter)
+            .set(weekPlan);
+    }
 }
