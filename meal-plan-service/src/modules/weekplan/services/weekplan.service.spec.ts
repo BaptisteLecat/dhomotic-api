@@ -163,6 +163,22 @@ describe('WeekplanService', () => {
                 });
             });
 
+            it('should throw an error if the user does not exist', async () => {
+                await expect(service.addOrUpdateCartProduct('weekplanId', 'houseId', {
+                    userId: 'unknownUserId',
+                    productItemId: 'productItemId',
+                    quantity: 1,
+                })).rejects.toThrowError('User with id unknownUserId not found');
+            });
+
+            it('should throw an error if the productItem does not exist', async () => {
+                await expect(service.addOrUpdateCartProduct('weekplanId', 'houseId', {
+                    userId: 'userUid',
+                    productItemId: 'unknownProductItemId',
+                    quantity: 1,
+                })).rejects.toThrowError('ProductItem with id unknownProductItemId not found');
+            });
+
         });
 
         it('should remove a cart product', async () => {
