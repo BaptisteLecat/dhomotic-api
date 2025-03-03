@@ -4,7 +4,7 @@ import {FirebaseProvider} from '../../../providers/firebase.provider';
 import {Weekplan} from '../entities/weekplan.entity';
 import {CreateWeekplanDto} from "../dto/create-weekplan.dto";
 import {CartProduct} from "../entities/cartProduct.entity";
-import {AddCartProductDto} from "../dto/add-cartProduct.dto";
+import {AddOrUpdateCartProductDto} from "../dto/addOrUpdate-cartProduct.dto";
 import {UserService} from "../../user/services/user.service";
 import {ProductItemService} from "../../productItem/services/productItem.service";
 import {CartUser} from "../entities/cartUser.entity";
@@ -67,7 +67,7 @@ export class WeekplanService {
         return weekPlan;
     }
 
-    async addCartProduct(id: string, houseId: string, addCartProductDto: AddCartProductDto): Promise<CartProduct> {
+    async addOrUpdateCartProduct(id: string, houseId: string, addOrUpdateCartProductDto: AddOrUpdateCartProductDto): Promise<CartProduct> {
 
         //Step 1: Get weekplan
         let weekPlan = await this.findOne(id, houseId);
@@ -76,23 +76,23 @@ export class WeekplanService {
             weekPlan = await this.create(new CreateWeekplanDto(), houseId);
         }
 
-        //Step 2: Get the data of the user who add the CartProduct, from the id in the addCartProductDto
+        //Step 2: Get the data of the user who add the CartProduct, from the id in the addOrUpdateCartProductDto
         //Step 2.1: Get the user from the id
-        const user = await this.userService.findOne(addCartProductDto.userId);
+        const user = await this.userService.findOne(addOrUpdateCartProductDto.userId);
         if (!user) {
-            throw new Error(`User with id ${addCartProductDto.userId} not found`);
+            throw new Error(`User with id ${addOrUpdateCartProductDto.userId} not found`);
         }
 
-        //Step 3: Get the productItem from the id in the addCartProductDto
-        const productItem = await this.productItemService.findOne(addCartProductDto.productItemId);
+        //Step 3: Get the productItem from the id in the addOrUpdateCartProductDto
+        const productItem = await this.productItemService.findOne(addOrUpdateCartProductDto.productItemId);
         if (!productItem) {
-            throw new Error(`ProductItem with id ${addCartProductDto.productItemId} not found`);
+            throw new Error(`ProductItem with id ${addOrUpdateCartProductDto.productItemId} not found`);
         }
 
         //Step 4: Create the CartProduct Entity
         const cartProduct = new CartProduct(
             productItem.id,
-            addCartProductDto.quantity,
+            addOrUpdateCartProductDto.quantity,
             new CartUser(
                 user.uid,
                 user.displayName,
