@@ -50,7 +50,7 @@ To add a new module to the project, follow these steps, using the `generation` m
 1. **Create Module Directory**: Create a new directory under `src/modules` for your module.
 
 2. **Define the Controller**:
-    - Create a controller file (e.g., `example.controller.ts`).
+    - Create a controller file (e.g., `weekplan.controller.ts`).
     - Use decorators like `@Controller`, `@Get`, `@Post` to define routes.
     - Inject the service using the constructor.
 
