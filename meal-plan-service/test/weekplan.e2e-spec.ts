@@ -56,4 +56,66 @@ describe('Weekplan Module (e2e)', () => {
                 expect(res.body).toHaveProperty('id', testData.weekplanId);
             });
     });
+    it('/houses/:houseId/weekplans (POST)', () => {
+        return request(app.getHttpServer())
+            .post(`/houses/${testData.houseId}/weekplans`)
+            .set("api-key", "api_key")
+            .set("Authorization", `Bearer ${token}`)
+            .set("Content-Type", "application/json")
+            .send({
+                startDate: new Date("2025-02-24").toISOString(),
+                endDate: new Date("2025-03-02").toISOString()
+            })
+            .expect(201)
+            .expect((res) => {
+                expect(res.body).toHaveProperty('id');
+                expect(res.body.menu).toHaveLength(21);
+            });
+    });
+
+    it('/houses/:houseId/weekplans/:id/cart (PUT)', () => {
+        return request(app.getHttpServer())
+            .put(`/houses/${testData.houseId}/weekplans/${testData.weekplanId}/cart`)
+            .set("api-key", "api_key")
+            .set("Authorization", `Bearer ${token}`)
+            .set("Content-Type", "application/json")
+            .send({
+                userId: testData.firstUserId,
+                productItemId: testData.productItemId,
+                quantity: 1
+            })
+            .expect(200)
+            .expect((res) => {
+                expect(res.body).toHaveProperty('id', testData.productItemId);
+                expect(res.body).toHaveProperty('quantity', 1);
+            });
+    });
+
+    it('/houses/:houseId/weekplans/:id/cart/:cartProductId (DELETE)', () => {
+        return request(app.getHttpServer())
+            .delete(`/houses/${testData.houseId}/weekplans/${testData.weekplanId}/cart/${testData.productItemId}`)
+            .set("api-key", "api_key")
+            .set("Authorization", `Bearer ${token}`)
+            .set("Content-Type", "application/json")
+            .expect(200)
+            .expect((res) => {
+                expect(res.body).toEqual({});
+            });
+    });
+
+    it('/houses/:houseId/weekplans/:id/menu/:menuId/meals (POST)', () => {
+        return request(app.getHttpServer())
+            .post(`/houses/${testData.houseId}/weekplans/${testData.weekplanId}/menu/${testData.menuId}/meals`)
+            .set("api-key", "api_key")
+            .set("Authorization", `Bearer ${token}`)
+            .set("Content-Type", "application/json")
+            .send({
+                userId: testData.firstUserId,
+                mealId: testData.mealId
+            })
+            .expect(201)
+            .expect((res) => {
+                expect(res.body).toHaveProperty('id', testData.mealId);
+            });
+    });
 });
