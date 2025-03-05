@@ -79,7 +79,7 @@ export class WeekplanService {
     //Menus are generated for the number of days in the weekplan (between startDate and endDate)
     async generateMenu(weekplan: Weekplan): Promise<Menu[]> {
         let menus: Menu[] = [];
-        const days = weekplan.endDate.toMillis() - weekplan.startDate.toMillis();
+        const days = weekplan.endDateTimestamp.toMillis() - weekplan.startDateTimestamp.toMillis();
         const numberOfDays = days / (1000 * 60 * 60 * 24) + 1;
         for (let i = 0; i < numberOfDays; i++) {
             for (let j = 0; j < 3; j++) {

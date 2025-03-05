@@ -1,13 +1,16 @@
 import {ApiProperty} from "@nestjs/swagger";
-import {IsNotEmpty, IsString} from "class-validator";
-import {Timestamp} from "@google-cloud/firestore";
+import {IsISO8601, IsNotEmpty, IsString} from "class-validator";
 
 export class CreateWeekplanDto {
     @ApiProperty()
     @IsNotEmpty()
-    startDate: Timestamp;
+    @IsString()
+    @IsISO8601()
+    startDate: string;
 
     @ApiProperty()
     @IsNotEmpty()
-    endDate: Timestamp;
+    @IsString()
+    @IsISO8601()
+    endDate: string;
 }

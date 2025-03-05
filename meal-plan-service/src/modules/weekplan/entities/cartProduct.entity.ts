@@ -33,7 +33,7 @@ export class CartProduct {
             quantity: this.quantity,
             user: this.user.toFirestoreDocument(),
             cartProductItem: this.cartProductItem.toFirestoreDocument(),
-            checkedAt: this.checkedAt,
+            checkedAt: this.checkedAt ? this.checkedAt : null,
             createdAt: this.createdAt,
         };
     }
@@ -44,7 +44,7 @@ export class CartProduct {
             quantity: this.quantity,
             user: this.user.toJson(),
             cartProductItem: this.cartProductItem.toJson(),
-            checkedAt: this.checkedAt,
+            checkedAt: this.checkedAt ? this.checkedAt : null,
             createdAt: this.createdAt,
         };
     }

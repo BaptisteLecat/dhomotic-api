@@ -22,7 +22,7 @@ describe('Weekplan Module (e2e)', () => {
         })
             .compile();
 
-        token = await authenticateUser(testData.firstUserEmail, testData.firstUserPassword);
+        token = await authenticateUser(testData.user[0].email, testData.user[0].password);
 
         app = moduleFixture.createNestApplication();
         await app.init();
@@ -30,6 +30,26 @@ describe('Weekplan Module (e2e)', () => {
 
     afterAll(async () => {
         await app.close();
+    });
+
+    it('/houses/:houseId/weekplans (POST)', () => {
+        return request(app.getHttpServer())
+            .post(`/houses/${testData.houseId}/weekplans`)
+            .set("api-key", "api_key")
+            .set("Authorization", `Bearer ${token}`)
+            .set("Content-Type", "application/json")
+            .send({
+                startDate: new Date("2025-02-24").toISOString(),
+                endDate: new Date("2025-03-02").toISOString()
+            })
+            .expect(201)
+            .expect((res) => {
+                expect(res.body).toHaveProperty('id');
+                expect(res.body.menu).toHaveLength(21);
+            }).then((res) => {
+                testData.weekplanId = res.body.id;
+                testData.menuId = res.body.menu[0].id;
+            });
     });
 
     it('/houses/:houseId/weekplans (GET)', () => {
@@ -56,22 +76,6 @@ describe('Weekplan Module (e2e)', () => {
                 expect(res.body).toHaveProperty('id', testData.weekplanId);
             });
     });
-    it('/houses/:houseId/weekplans (POST)', () => {
-        return request(app.getHttpServer())
-            .post(`/houses/${testData.houseId}/weekplans`)
-            .set("api-key", "api_key")
-            .set("Authorization", `Bearer ${token}`)
-            .set("Content-Type", "application/json")
-            .send({
-                startDate: new Date("2025-02-24").toISOString(),
-                endDate: new Date("2025-03-02").toISOString()
-            })
-            .expect(201)
-            .expect((res) => {
-                expect(res.body).toHaveProperty('id');
-                expect(res.body.menu).toHaveLength(21);
-            });
-    });
 
     it('/houses/:houseId/weekplans/:id/cart (PUT)', () => {
         return request(app.getHttpServer())
@@ -80,20 +84,20 @@ describe('Weekplan Module (e2e)', () => {
             .set("Authorization", `Bearer ${token}`)
             .set("Content-Type", "application/json")
             .send({
-                userId: testData.firstUserId,
-                productItemId: testData.productItemId,
+                userId: testData.user[0].uid,
+                productItemId: testData.productItems[0].id,
                 quantity: 1
             })
             .expect(200)
             .expect((res) => {
-                expect(res.body).toHaveProperty('id', testData.productItemId);
+                expect(res.body).toHaveProperty('id', testData.productItems[0].id);
                 expect(res.body).toHaveProperty('quantity', 1);
             });
     });
 
     it('/houses/:houseId/weekplans/:id/cart/:cartProductId (DELETE)', () => {
         return request(app.getHttpServer())
-            .delete(`/houses/${testData.houseId}/weekplans/${testData.weekplanId}/cart/${testData.productItemId}`)
+            .delete(`/houses/${testData.houseId}/weekplans/${testData.weekplanId}/cart/${testData.productItems[0].id}`)
             .set("api-key", "api_key")
             .set("Authorization", `Bearer ${token}`)
             .set("Content-Type", "application/json")
@@ -110,7 +114,7 @@ describe('Weekplan Module (e2e)', () => {
             .set("Authorization", `Bearer ${token}`)
             .set("Content-Type", "application/json")
             .send({
-                userId: testData.firstUserId,
+                userId: testData.user[0].uid,
                 mealId: testData.mealId
             })
             .expect(201)
