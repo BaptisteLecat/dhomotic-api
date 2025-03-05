@@ -1,75 +1,58 @@
-import {Timestamp} from '@google-cloud/firestore';
-import {MealProductItem} from './mealProductItem.entity';
+import {NestedUser} from "../../user/entities/nestedUser.entity";
+import {Timestamp} from "@google-cloud/firestore";
+import {Meal} from "../../meal/entities/meal.entity";
 
 export class MenuMeal {
     id: string;
+    user: NestedUser;
+    meal: Meal;
     createdAt: Timestamp;
-    name: string;
-    description: string;
-    mealProductItem: MealProductItem[];
 
     public constructor(
         id: string,
+        user: NestedUser,
+        meal: Meal,
         createdAt: Timestamp = Timestamp.now(),
-        name: string,
-        description: string,
-        mealProductItem: MealProductItem[] = [],
     ) {
         this.id = id;
+        this.user = user;
+        this.meal = meal;
         this.createdAt = createdAt;
-        this.name = name;
-        this.description = description;
-        this.mealProductItem = mealProductItem;
     }
 
     static fromFirestoreDocument(id: any, data: any): MenuMeal {
         return new MenuMeal(
             id,
+            NestedUser.fromFirestoreDocument(data.user.id, data.user),
+            Meal.fromFirestoreDocument(data.meal.id, data.meal),
             data.createdAt,
-            data.name,
-            data.description,
-            data.ingredients.map((mealProductItem) =>
-                MealProductItem.fromFirestoreDocument(
-                    mealProductItem.id,
-                    mealProductItem,
-                ),
-            ),
         );
     }
 
     static fromJson(data: any): MenuMeal {
         return new MenuMeal(
             data.id,
+            NestedUser.fromJson(data.user),
+            Meal.fromJson(data.meal),
             data.createdAt,
-            data.name,
-            data.description,
-            data.ingredients.map((mealProductItem) =>
-                MealProductItem.fromJson(mealProductItem),
-            ),
         );
     }
 
     toFirestoreDocument(): any {
         return {
             id: this.id,
+            user: this.user.toFirestoreDocument(),
+            meal: this.meal.toFirestoreDocument(),
             createdAt: this.createdAt,
-            name: this.name,
-            description: this.description,
-            ingredients: this.mealProductItem.map((mealProductItem) =>
-                mealProductItem.toFirestoreDocument(),
-            ),
         };
     }
 
     toJson(): any {
         return {
             id: this.id,
+            user: this.user.toJson(),
+            meal: this.meal.toJson(),
             createdAt: this.createdAt,
-            name: this.name,
-            description: this.description,
-            ingredients: this.mealProductItem.map((mealProductItem) =>
-                mealProductItem.toJson(),
-            ),
         };
     }
 }

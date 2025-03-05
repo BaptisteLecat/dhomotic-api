@@ -7,8 +7,12 @@ import {CartProduct} from "../entities/cartProduct.entity";
 import {AddOrUpdateCartProductDto} from "../dto/addOrUpdate-cartProduct.dto";
 import {UserService} from "../../user/services/user.service";
 import {ProductItemService} from "../../productItem/services/productItem.service";
-import {CartUser} from "../entities/cartUser.entity";
 import {CartProductItem} from "../entities/cartProductItem.entity";
+import {NestedUser} from "../../user/entities/nestedUser.entity";
+import {MenuMeal} from "../entities/menuMeal.entity";
+import {MealService} from "../../meal/services/meal.service";
+import {CreateMenuMealDto} from "../dto/create-menuMeal.dto";
+import {Menu} from "../entities/menu.entity";
 
 @Injectable()
 export class WeekplanService {
@@ -22,6 +26,8 @@ export class WeekplanService {
         private readonly userService: UserService,
         @Inject(ProductItemService)
         private readonly productItemService: ProductItemService,
+        @Inject(MealService)
+        private readonly mealService: MealService,
     ) {
     }
 
@@ -55,7 +61,8 @@ export class WeekplanService {
 
     async create(createWeekplanDto: CreateWeekplanDto, houseId: string): Promise<Weekplan> {
         const id = this.firestoreProvider.getFirestore().collection('houses').doc(houseId).collection(WeekplanService.collection).doc().id;
-        const weekPlan = new Weekplan(id);
+        const weekPlan = new Weekplan(id, createWeekplanDto.startDate, createWeekplanDto.endDate);
+        weekPlan.menu = await this.generateMenu(weekPlan);
         const weekPlanRef = await this.firestoreProvider
             .getFirestore()
             .collection('houses')
@@ -65,6 +72,24 @@ export class WeekplanService {
             .withConverter(this.weekPlanConverter)
             .set(weekPlan);
         return weekPlan;
+    }
+
+    //Menus are generated at the creation of the weekplan
+    //There are 3 meals per day, each day has 3 slices
+    //Menus are generated for the number of days in the weekplan (between startDate and endDate)
+    async generateMenu(weekplan: Weekplan): Promise<Menu[]> {
+        let menus: Menu[] = [];
+        const days = weekplan.endDate.toMillis() - weekplan.startDate.toMillis();
+        const numberOfDays = days / (1000 * 60 * 60 * 24) + 1;
+        for (let i = 0; i < numberOfDays; i++) {
+            for (let j = 0; j < 3; j++) {
+                const id = this.firestoreProvider.getFirestore().collection('houses').doc(weekplan.id).collection(WeekplanService.collection).doc().id;
+                const menu = new Menu(id, i, j);
+                menus.push(menu);
+
+            }
+        }
+        return menus;
     }
 
     async addOrUpdateCartProduct(id: string, houseId: string, addOrUpdateCartProductDto: AddOrUpdateCartProductDto): Promise<CartProduct> {
@@ -93,7 +118,7 @@ export class WeekplanService {
         const cartProduct = new CartProduct(
             productItem.id,
             addOrUpdateCartProductDto.quantity,
-            new CartUser(
+            new NestedUser(
                 user.uid,
                 user.displayName,
                 user.email,
@@ -147,5 +172,64 @@ export class WeekplanService {
             .doc(id)
             .withConverter(this.weekPlanConverter)
             .set(weekPlan);
+    }
+
+    async createMenuMeal(menuId: string, weekplanId: string, houseId: string, createMenuMealDto: CreateMenuMealDto): Promise<MenuMeal> {
+
+        //Step 1: Get weekplan
+        let weekPlan = await this.findOne(weekplanId, houseId);
+        if (!weekPlan) {
+            throw new Error(`Weekplan with id ${weekplanId} not found`);
+        }
+
+        //Step 2: Get the data of the user who add the CartProduct, from the id in the addOrUpdateCartProductDto
+        const user = await this.userService.findOne(createMenuMealDto.userId);
+        if (!user) {
+            throw new Error(`User with id ${createMenuMealDto.userId} not found`);
+        }
+
+        //Step 3: Check if the menu exist in the weekplan
+        const menu = weekPlan.menu.find((menu) => menu.id === menuId);
+        if (!menu) {
+            throw new Error(`Menu with id ${menuId} not found in the weekplan with id ${weekplanId}`);
+        }
+
+        //Step 4: Check if the meal does not already exist in the menu
+        const index = menu.menuMeals.findIndex((menuMeal) => menuMeal.id === createMenuMealDto.mealId);
+        if (index !== -1) {
+            throw new Error(`Meal with id ${createMenuMealDto.mealId} already exist in the menu with id ${menuId}`);
+        }
+
+        //Step 5: Get the Meal from the id in the createMenuMealDto
+        const meal = await this.mealService.findOne(createMenuMealDto.mealId);
+        if (!meal) {
+            throw new Error(`Meal with id ${createMenuMealDto.mealId} not found`);
+        }
+
+        //Step 6: Create the MenuMeal Entity
+        const menuMeal = new MenuMeal(
+            meal.id,
+            new NestedUser(
+                user.uid,
+                user.displayName,
+                user.email,
+                user.photoURL,
+            ),
+            meal,
+        );
+
+        //Step 7: Add the MenuMeal to the Menu
+        weekPlan.menu.find((menu) => menu.id === menuId).menuMeals.push(menuMeal);
+
+        //Step 8: Save the Weekplan
+        await this.firestoreProvider
+            .getFirestore()
+            .collection('houses')
+            .doc(houseId)
+            .collection(WeekplanService.collection)
+            .doc(weekplanId)
+            .withConverter(this.weekPlanConverter)
+            .set(weekPlan);
+        return menuMeal;
     }
 }

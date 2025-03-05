@@ -1,4 +1,4 @@
-export class CartUser {
+export class NestedUser {
     id: string;
     displayName: string;
     email: string;
@@ -16,8 +16,8 @@ export class CartUser {
         this.photoURL = photoURL;
     }
 
-    static fromFirestoreDocument(id: any, data: any): CartUser {
-        return new CartUser(
+    static fromFirestoreDocument(id: any, data: any): NestedUser {
+        return new NestedUser(
             id,
             data.displayName,
             data.email,
@@ -25,8 +25,8 @@ export class CartUser {
         );
     }
 
-    static fromJson(data: any): CartUser {
-        return new CartUser(
+    static fromJson(data: any): NestedUser {
+        return new NestedUser(
             data.id,
             data.displayName,
             data.email,

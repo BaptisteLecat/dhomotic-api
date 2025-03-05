@@ -1,10 +1,10 @@
-import { MenuMeal } from "../entities/menuMeal.entity";
 import { Injectable } from "@nestjs/common";
 import { FirestoreDataConverter, Firestore } from '@google-cloud/firestore';
 import * as firebase from 'firebase-admin';
+import {MenuMeal} from "../entities/menuMeal.entity";
 
 @Injectable()
-export class MenuMenuMealConverter implements FirestoreDataConverter<MenuMeal> {
+export class MenuMealConverter implements FirestoreDataConverter<MenuMeal> {
     toFirestore(modelObject: MenuMeal): firebase.firestore.DocumentData {
         return modelObject.toFirestoreDocument();
     }

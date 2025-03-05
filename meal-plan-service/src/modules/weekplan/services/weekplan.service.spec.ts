@@ -8,6 +8,10 @@ import {ProductItemModule} from "../../productItem/productItem.module";
 import {FirebaseProvider} from "../../../providers/firebase.provider";
 import {WeekplanModule} from "../weekplan.module";
 import {ConfigModule} from "@nestjs/config";
+import {Menu} from "../entities/menu.entity";
+import {Meal} from "../../meal/entities/meal.entity";
+import {MealModule} from "../../meal/meal.module";
+import {MenuMeal} from "../entities/menuMeal.entity";
 
 // Import et initialisation du mock officiel pour @google-cloud/firestore
 const {mockGoogleCloudFirestore} = require('firestore-jest-mock');
@@ -23,7 +27,15 @@ mockGoogleCloudFirestore({
                             id: 'weekplanId',
                             createdAt: Timestamp.now(),
                             cart: [],
-                            menu: [],
+                            menu: [
+                                {
+                                    id: 'menuId0',
+                                    weekDayIndex: 0,
+                                    daySliceIndex: 0,
+                                    createdAt: Timestamp.now(),
+                                    menuMeals: [],
+                                }
+                            ],
                         },
                     ],
                 },
@@ -52,6 +64,19 @@ mockGoogleCloudFirestore({
                 price: 200,
             },
         ],
+        meals: [
+            {
+                id: 'mealId',
+                name: 'mealName',
+                description: 'mealDescription',
+                mealProductItem: [
+                    {
+                        id: 'productItemId',
+                        name: 'productItemName',
+                    },
+                ],
+            },
+        ],
     },
 }, {
     // Très important : https://www.npmjs.com/package/firestore-jest-mock#mutable
@@ -70,7 +95,7 @@ describe('WeekplanService', () => {
         firestore = new Firestore();
 
         const module: TestingModule = await Test.createTestingModule({
-            imports: [WeekplanModule, UserModule, ProductItemModule, ConfigModule.forRoot({
+            imports: [MealModule, WeekplanModule, UserModule, ProductItemModule, ConfigModule.forRoot({
                 isGlobal: true,
             }),],
             providers: [
@@ -110,11 +135,29 @@ describe('WeekplanService', () => {
     });
 
     it('should create a weekplan', async () => {
-        const weekplan = await service.create({}, 'houseId');
+        const weekplan = await service.create({
+            startDate: Timestamp.fromDate(new Date("2025-02-24")),
+            endDate: Timestamp.fromDate(new Date("2025-03-02")),
+        }, 'houseId');
         expect(weekplan).toBeInstanceOf(Weekplan);
 
         // Vérification optionnelle de l'appel à la collection "weekplans"
         expect(mockCollection).toHaveBeenCalledWith('weekplans');
+
+        const updatedWeekplan = await service.findOne(weekplan.id, 'houseId');
+        expect(updatedWeekplan.menu).toHaveLength(21);
+        expect(updatedWeekplan.menu[0]).toMatchObject({
+            weekDayIndex: 0,
+            daySliceIndex: 0,
+        });
+        expect(updatedWeekplan.menu[2]).toMatchObject({
+            weekDayIndex: 0,
+            daySliceIndex: 2,
+        });
+        expect(updatedWeekplan.menu[20]).toMatchObject({
+            weekDayIndex: 6,
+            daySliceIndex: 2,
+        });
     });
 
     describe('CartProduct', () => {
@@ -196,6 +239,65 @@ describe('WeekplanService', () => {
             const updatedWeekplan = await service.findOne('weekplanId', 'houseId');
             expect(updatedWeekplan.cart).toHaveLength(0);
 
+        });
+    });
+
+    describe('Menu', () => {
+        describe('Add MenuMeal in the menu:', () => {
+
+            it('should add a new MenuMeal', async () => {
+                const menuMeal = await service.createMenuMeal("menuId0", 'weekplanId', 'houseId', {
+                    userId: 'userUid',
+                    mealId: 'mealId',
+                });
+                expect(menuMeal).toBeInstanceOf(MenuMeal);
+
+                // Vérification de l'effet final : le weekplan récupéré doit contenir le nouveau cartProduct.
+                const updatedWeekplan = await service.findOne('weekplanId', 'houseId');
+                expect(updatedWeekplan.menu[0].menuMeals).toHaveLength(1);
+                expect(updatedWeekplan.menu[0].menuMeals[0]).toMatchObject({
+                    meal: {
+                        id: 'mealId',
+                        name: "mealName",
+                    }
+                });
+            });
+
+            it('should throw an error if the weekplan does not exist', async () => {
+                await expect(service.createMenuMeal('menuId0', 'unknownWeekplanId', 'houseId', {
+                    userId: 'userUid',
+                    mealId: 'mealId',
+                })).rejects.toThrowError('Weekplan with id unknownWeekplanId not found');
+            });
+
+            it('should throw an error if the user does not exist', async () => {
+                await expect(service.createMenuMeal('menuId0', 'weekplanId', 'houseId', {
+                    userId: 'unknownUserId',
+                    mealId: 'mealId',
+                })).rejects.toThrowError('User with id unknownUserId not found');
+            });
+
+            it('should throw an error if the menu does not exist', async () => {
+                await expect(service.createMenuMeal('unknownMenuId', 'weekplanId', 'houseId', {
+                    userId: 'userUid',
+                    mealId: 'mealId',
+                })).rejects.toThrowError('Menu with id unknownMenuId not found in the weekplan with id weekplanId');
+            });
+
+            it('should throw an error if the Meal already exist in the menu', async () => {
+                // Ajout du même MenuMeal
+                await expect(service.createMenuMeal('menuId0', 'weekplanId', 'houseId', {
+                    userId: 'userUid',
+                    mealId: 'mealId',
+                })).rejects.toThrowError('Meal with id mealId already exist in the menu with id menuId0');
+            });
+
+            it('should throw an error if the Meal does not exist', async () => {
+                await expect(service.createMenuMeal('menuId0', 'weekplanId', 'houseId', {
+                    userId: 'userUid',
+                    mealId: 'unknownMealId',
+                })).rejects.toThrowError('Meal with id unknownMealId not found');
+            });
         });
     });
 

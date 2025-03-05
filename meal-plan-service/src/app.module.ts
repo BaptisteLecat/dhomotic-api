@@ -7,6 +7,7 @@ import {FirebaseAuthService} from './modules/auth/services/firebase.auth.service
 import {WeekplanModule} from './modules/weekplan/weekplan.module';
 import {UserModule} from "./modules/user/user.module";
 import {ProductItemModule} from "./modules/productItem/productItem.module";
+import {MealModule} from "./modules/meal/meal.module";
 
 
 @Module({
@@ -18,7 +19,8 @@ import {ProductItemModule} from "./modules/productItem/productItem.module";
         AuthModule,
         WeekplanModule,
         UserModule,
-        ProductItemModule
+        ProductItemModule,
+        MealModule
     ],
     controllers: [],
     providers: [FirebaseProvider, AuthService, FirebaseAuthService],
