@@ -72,13 +72,23 @@ export class WeekPlanController {
         return this.weekplanService.removeCartProduct(id, houseId, cartProductId);
     }
 
-    @Post(':id/menu/:menuId/meals')
+    @Post(':id/menu/:menuId/menu-meals')
     @ApiParam({name: 'houseId', type: String})
     @ApiParam({name: 'id', type: String})
     @ApiParam({name: 'menuId', type: String})
     @ApiBody({type: CreateMenuMealDto})
     async createMenuMeal(@Param('id') id: string, @Param('menuId') menuId: string, @Param('houseId') houseId: string, @Body() createMenuMealDto: CreateMenuMealDto) {
         return this.weekplanService.createMenuMeal(menuId, id, houseId, createMenuMealDto);
+    }
+
+    @Delete(':id/menu/:menuId/menu-meals/:menuMealId')
+    @ApiParam({name: 'houseId', type: String})
+    @ApiParam({name: 'id', type: String})
+    @ApiParam({name: 'menuId', type: String})
+    @ApiParam({name: 'menuMealId', type: String})
+    @ApiBody({type: CreateMenuMealDto})
+    async removeMenuMeal(@Param('id') id: string, @Param('menuMealId') menuMealId: string, @Param('menuId') menuId: string, @Param('houseId') houseId: string, @Body() createMenuMealDto: CreateMenuMealDto) {
+        return this.weekplanService.removeMenuMeal(menuMealId, menuId, id, houseId);
     }
 
 

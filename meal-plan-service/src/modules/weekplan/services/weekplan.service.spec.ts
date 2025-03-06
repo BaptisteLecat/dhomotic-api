@@ -25,6 +25,8 @@ mockGoogleCloudFirestore({
                     weekplans: [
                         {
                             id: 'weekplanId',
+                            startDate: Timestamp.fromDate(new Date("2025-02-24")),
+                            endDate: Timestamp.fromDate(new Date("2025-03-02")),
                             createdAt: Timestamp.now(),
                             cart: [],
                             menu: [
@@ -69,6 +71,17 @@ mockGoogleCloudFirestore({
                 id: 'mealId',
                 name: 'mealName',
                 description: 'mealDescription',
+                mealProductItem: [
+                    {
+                        id: 'productItemId',
+                        name: 'productItemName',
+                    },
+                ],
+            },
+            {
+                id: 'mealId2',
+                name: 'mealName2',
+                description: 'mealDescription2',
                 mealProductItem: [
                     {
                         id: 'productItemId',
@@ -136,8 +149,8 @@ describe('WeekplanService', () => {
 
     it('should create a weekplan', async () => {
         const weekplan = await service.create({
-            startDate: Timestamp.fromDate(new Date("2025-02-24")),
-            endDate: Timestamp.fromDate(new Date("2025-03-02")),
+            startDate: new Date("2025-03-31").toISOString(),
+            endDate: new Date("2025-04-06").toISOString()
         }, 'houseId');
         expect(weekplan).toBeInstanceOf(Weekplan);
 
@@ -297,6 +310,27 @@ describe('WeekplanService', () => {
                     userId: 'userUid',
                     mealId: 'unknownMealId',
                 })).rejects.toThrowError('Meal with id unknownMealId not found');
+            });
+
+            it('should remove a MenuMeal', async () => {
+                // Ajout d'un MenuMeal
+                const menuMeal = await service.createMenuMeal("menuId0", 'weekplanId', 'houseId', {
+                    userId: 'userUid',
+                    mealId: 'mealId2',
+                });
+
+                // Suppression du MenuMeal
+                await service.removeMenuMeal(menuMeal.id, 'menuId0', 'weekplanId', 'houseId');
+
+                // Vérification de l'effet final : le weekplan récupéré doit être vide.
+                const updatedWeekplan = await service.findOne('weekplanId', 'houseId');
+                expect(updatedWeekplan.menu[0].menuMeals).toHaveLength(1);
+                expect(updatedWeekplan.menu[0].menuMeals[0]).toMatchObject({
+                    meal: {
+                        id: 'mealId',
+                        name: "mealName",
+                    }
+                });
             });
         });
     });

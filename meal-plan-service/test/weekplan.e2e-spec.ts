@@ -7,7 +7,11 @@ import axios from 'axios';
 
 
 function authenticateUser(email: string, password: string) {
-    return axios.post('http://127.0.0.1:9099/identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=key', { "email": email, "password": password, "returnSecureToken": true }).then((response) => response.data.idToken);
+    return axios.post('http://127.0.0.1:9099/identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=key', {
+        "email": email,
+        "password": password,
+        "returnSecureToken": true
+    }).then((response) => response.data.idToken);
 }
 
 describe('Weekplan Module (e2e)', () => {
@@ -107,9 +111,9 @@ describe('Weekplan Module (e2e)', () => {
             });
     });
 
-    it('/houses/:houseId/weekplans/:id/menu/:menuId/meals (POST)', () => {
+    it('/houses/:houseId/weekplans/:id/menu/:menuId/menu-meals (POST)', () => {
         return request(app.getHttpServer())
-            .post(`/houses/${testData.houseId}/weekplans/${testData.weekplanId}/menu/${testData.menuId}/meals`)
+            .post(`/houses/${testData.houseId}/weekplans/${testData.weekplanId}/menu/${testData.menuId}/menu-meals`)
             .set("api-key", "api_key")
             .set("Authorization", `Bearer ${token}`)
             .set("Content-Type", "application/json")
@@ -119,7 +123,20 @@ describe('Weekplan Module (e2e)', () => {
             })
             .expect(201)
             .expect((res) => {
-                expect(res.body).toHaveProperty('id', testData.mealId);
+                expect(res.body).toHaveProperty('user.id', testData.user[0].uid);
+                expect(res.body).toHaveProperty('meal.id', testData.mealId);
+            });
+    });
+
+    it('/houses/:houseId/weekplans/:id/menu/:menuId/menu-meals/:mealId (DELETE)', () => {
+        return request(app.getHttpServer())
+            .delete(`/houses/${testData.houseId}/weekplans/${testData.weekplanId}/menu/${testData.menuId}/menu-meals/${testData.mealId}`)
+            .set("api-key", "api_key")
+            .set("Authorization", `Bearer ${token}`)
+            .set("Content-Type", "application/json")
+            .expect(200)
+            .expect((res) => {
+                expect(res.body).toEqual({});
             });
     });
 });

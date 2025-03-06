@@ -195,7 +195,7 @@ export class WeekplanService {
         }
 
         //Step 4: Check if the meal does not already exist in the menu
-        const index = menu.menuMeals.findIndex((menuMeal) => menuMeal.id === createMenuMealDto.mealId);
+        const index = menu.menuMeals.findIndex((menuMeal) => menuMeal.meal.id === createMenuMealDto.mealId);
         if (index !== -1) {
             throw new Error(`Meal with id ${createMenuMealDto.mealId} already exist in the menu with id ${menuId}`);
         }
@@ -207,8 +207,12 @@ export class WeekplanService {
         }
 
         //Step 6: Create the MenuMeal Entity
+
+        //Step 6.1: Generate a unique id for the MenuMeal
+        const menuMealId = this.firestoreProvider.getFirestore().collection('houses').doc(houseId).collection(WeekplanService.collection).doc().id;
+
         const menuMeal = new MenuMeal(
-            meal.id,
+            menuMealId,
             new NestedUser(
                 user.uid,
                 user.displayName,
@@ -231,5 +235,32 @@ export class WeekplanService {
             .withConverter(this.weekPlanConverter)
             .set(weekPlan);
         return menuMeal;
+    }
+
+    async removeMenuMeal(menuMealId: string, menuId: string, weekplanId: string, houseId: string): Promise<void> {
+        //Step 1: Get weekplan
+        let weekPlan = await this.findOne(weekplanId, houseId);
+        if (!weekPlan) {
+            throw new Error(`Weekplan with id ${weekplanId} not found`);
+        }
+
+        //Step 2: Check if the menu exist in the weekplan
+        const menu = weekPlan.menu.find((menu) => menu.id === menuId);
+        if (!menu) {
+            throw new Error(`Menu with id ${menuId} not found in the weekplan with id ${weekplanId}`);
+        }
+
+        //Step 3: Delete the MenuMeal
+        menu.menuMeals = menu.menuMeals.filter((menuMeal) => menuMeal.id !== menuMealId);
+
+        //Step 4: Save the Weekplan
+        await this.firestoreProvider
+            .getFirestore()
+            .collection('houses')
+            .doc(houseId)
+            .collection(WeekplanService.collection)
+            .doc(weekplanId)
+            .withConverter(this.weekPlanConverter)
+            .set(weekPlan);
     }
 }
