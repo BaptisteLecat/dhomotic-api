@@ -5,7 +5,7 @@
 
 ## Description
 
-Weather Journey Image API is a RESTful API that generates images based on the weather conditions of a location. It uses the
+Dhomotic APIs is a RESTful API that generates images based on the weather conditions of a location. It uses the
 OpenAI API to generate images based on the weather conditions of a location. The API is built using NestJS and is deployed  
 Google Cloud Run.
 
