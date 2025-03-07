@@ -68,6 +68,12 @@ Reference : https://stackoverflow.com/a/66343248/19101705
 
 ## Deploy to GCP
 
+create the artifact registry repository
+
+```bash
+gcloud artifacts repositories create APP_NAME --repository-format=docker --location=europe-west1
+```
+
  ```bash                                                                                                                     
  # build                                                                                                                     
  docker build -t europe-west1-docker.pkg.dev/weatherapp-journey/weather-generation-api/generation-api:0.0.1 --platform       
