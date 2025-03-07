@@ -10,13 +10,21 @@ export class CartProduct {
     checkedAt?: Timestamp;
     createdAt: Timestamp;
 
-    public constructor(id: string, quantity: number, user: NestedUser, cartProductItem: CartProductItem, checkedAt?: Timestamp, createdAt: Timestamp = Timestamp.now()) {
+    public constructor(id: string, quantity: number, user: NestedUser, cartProductItem: CartProductItem, checkedAt?: string | Timestamp, createdAt: Timestamp = Timestamp.now()) {
         this.id = id;
         this.quantity = quantity;
         this.user = user;
         this.cartProductItem = cartProductItem;
-        this.checkedAt = checkedAt;
+        this.checkedAt = checkedAt instanceof Timestamp
+            ? checkedAt
+            : (checkedAt ? Timestamp.fromDate(new Date(checkedAt)) : null);
         this.createdAt = createdAt;
+    }
+
+    setCheckedAt(checkedAt: string | Timestamp): void {
+        this.checkedAt = checkedAt instanceof Timestamp
+            ? checkedAt
+            : (checkedAt ? Timestamp.fromDate(new Date(checkedAt)) : null);
     }
 
     static fromFirestoreDocument(id: any, data: any): CartProduct {

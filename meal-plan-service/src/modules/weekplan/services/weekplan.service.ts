@@ -131,11 +131,12 @@ export class WeekplanService {
             ),
         );
 
-        //Step 5: Replace the CartProduct if already exist
+        //Step 5: Only update the quantity or checkedAt if the CartProduct already exist in the Weekplan
         const index = weekPlan.cart.findIndex((cartProduct) => cartProduct.id === productItem.id);
         if (index !== -1) {
-            //Step 5.1: Replace the CartProduct
-            weekPlan.cart[index] = cartProduct;
+            //Step 5.1: Update the quantity or checkedAt of the CartProduct based on the data in the addOrUpdateCartProductDto
+            weekPlan.cart[index].quantity = addOrUpdateCartProductDto.quantity;
+            weekPlan.cart[index].setCheckedAt(addOrUpdateCartProductDto.checkedAt);
         } else {
             //Step 5.1(bis): Add the CartProduct to the Weekplan
             weekPlan.cart.push(cartProduct);

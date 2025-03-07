@@ -1,21 +1,21 @@
-import {MealProductItem} from "./mealProductItem.entity";
+import {MealProduct} from "./mealProduct.entity";
 
 export class Meal {
     id: string;
     name: string;
     description: string;
-    mealProductItem: MealProductItem[];
+    mealProduct: MealProduct[];
 
     public constructor(
         id: string,
         name: string,
         description: string,
-        mealProductItem: MealProductItem[],
+        mealProduct: MealProduct[],
     ) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.mealProductItem = mealProductItem;
+        this.mealProduct = mealProduct;
     }
 
     static fromFirestoreDocument(id: any, data: any): Meal {
@@ -23,10 +23,10 @@ export class Meal {
             id,
             data.name,
             data.description,
-            data.mealProductItem.map((mealProductItem) =>
-                MealProductItem.fromFirestoreDocument(
-                    mealProductItem.id,
-                    mealProductItem,
+            data.mealProduct.map((mealProduct) =>
+                MealProduct.fromFirestoreDocument(
+                    mealProduct.id,
+                    mealProduct,
                 ),
             ),
         );
@@ -37,8 +37,8 @@ export class Meal {
             data.id,
             data.name,
             data.description,
-            data.mealProductItem.map((mealProductItem) =>
-                MealProductItem.fromJson(mealProductItem),
+            data.mealProduct.map((mealProduct) =>
+                MealProduct.fromJson(mealProduct),
             ),
         );
     }
@@ -48,8 +48,8 @@ export class Meal {
             id: this.id,
             name: this.name,
             description: this.description,
-            mealProductItem: this.mealProductItem.map((mealProductItem) =>
-                mealProductItem.toFirestoreDocument(),
+            mealProduct: this.mealProduct.map((mealProduct) =>
+                mealProduct.toFirestoreDocument(),
             ),
         };
     }
@@ -59,8 +59,8 @@ export class Meal {
             id: this.id,
             name: this.name,
             description: this.description,
-            mealProductItem: this.mealProductItem.map((mealProductItem) =>
-                mealProductItem.toJson(),
+            mealProduct: this.mealProduct.map((mealProduct) =>
+                mealProduct.toJson(),
             ),
         };
     }

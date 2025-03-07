@@ -122,9 +122,13 @@ describe('Weekplan Module (e2e)', () => {
                 mealId: testData.mealId
             })
             .expect(201)
-            .expect((res) => {
+            .expect(async (res) => {
                 expect(res.body).toHaveProperty('user.id', testData.user[0].uid);
                 expect(res.body).toHaveProperty('meal.id', testData.mealId);
+                const weekplan = await request(app.getHttpServer()).get(`/houses/${testData.houseId}/weekplans/${testData.weekplanId}`).set("api-key", "api_key").set("Authorization", `Bearer ${token}`).set("Content-Type", "application/json");
+                expect(weekplan.body.cart).toHaveLength(1);
+                expect(weekplan.body.cart[0]).toHaveProperty('id', testData.productItems[1].id);
+                expect(weekplan.body.cart[0]).toHaveProperty('quantity', 3);
             });
     });
 

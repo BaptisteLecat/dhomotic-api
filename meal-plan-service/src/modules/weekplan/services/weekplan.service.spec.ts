@@ -71,10 +71,17 @@ mockGoogleCloudFirestore({
                 id: 'mealId',
                 name: 'mealName',
                 description: 'mealDescription',
-                mealProductItem: [
+                mealProduct: [
                     {
-                        id: 'productItemId',
-                        name: 'productItemName',
+                        id: 'mealProductId',
+                        quantity: 1,
+                        createdAt: Timestamp.now(),
+                        mealProductItem:
+                            {
+                                id: 'productItemId',
+                                name: 'productItemName',
+                            },
+
                     },
                 ],
             },
@@ -82,10 +89,17 @@ mockGoogleCloudFirestore({
                 id: 'mealId2',
                 name: 'mealName2',
                 description: 'mealDescription2',
-                mealProductItem: [
+                mealProduct: [
                     {
-                        id: 'productItemId',
-                        name: 'productItemName',
+                        id: 'mealProductId2',
+                        quantity: 1,
+                        createdAt: Timestamp.now(),
+                        mealProductItem:
+                            {
+                                id: 'productItemId2',
+                                name: 'productItemName2',
+                            },
+
                     },
                 ],
             },

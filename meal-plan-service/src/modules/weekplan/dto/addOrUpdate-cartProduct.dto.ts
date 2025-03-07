@@ -1,5 +1,5 @@
-import {ApiProperty} from "@nestjs/swagger";
-import {IsNotEmpty, IsNumber, IsPositive, IsString} from "class-validator";
+import {ApiProperty, ApiPropertyOptional} from "@nestjs/swagger";
+import {IsISO8601, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString} from "class-validator";
 
 export class AddOrUpdateCartProductDto {
     @ApiProperty()
@@ -17,4 +17,10 @@ export class AddOrUpdateCartProductDto {
     @IsNumber()
     @IsPositive()
     quantity: number;
+
+    @ApiPropertyOptional()
+    @IsOptional()
+    @IsString()
+    @IsISO8601()
+    checkedAt?: string;
 }
