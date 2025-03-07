@@ -1,6 +1,6 @@
 import {Inject, Injectable} from "@nestjs/common";
 import {UserRecord} from "firebase-admin/lib/auth/user-record";
-import {FirebaseProvider} from "../providers/firebase.provider";
+import {FirebaseProvider} from "../../../providers/firebase.provider";
 
 @Injectable()
 export class FirebaseAuthService {
