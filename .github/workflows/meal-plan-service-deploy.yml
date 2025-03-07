@@ -8,7 +8,6 @@ on:
 
 jobs:
   deploy:
-    environment: prod
     uses: ./.github/workflows/common-deploy-cloud-run.yml
     with:
       environment: prod
