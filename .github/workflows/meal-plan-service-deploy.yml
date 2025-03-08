@@ -7,21 +7,15 @@ on:
 jobs:
   deploy:
     environment: prod
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Deploy to Cloud Run
-        uses: ./.github/workflows/common-deploy-cloud-run.yml
-        with:
-          environment: prod
-          image_tag: 0.0.${{ github.run_number }}
-          gcp_project_id: "dhomotic"
-          gcp_app_name: "meal-plan-service"
-          cloud_run_region: "europe-west1"
-          env_vars_string: "NODE_ENV=production"  # uniquement les variables non sensibles
-          cloud_run_service_account: "api-meal-plan-service@dhomotic.iam.gserviceaccount.com"
-        secrets:
-          SERVICE_ACCOUNT_KEY: ${{ secrets.SERVICE_ACCOUNT_KEY }}
-          API_KEY: ${{ secrets.API_KEY }}
+    uses: ./.github/workflows/common-deploy-cloud-run.yml
+    with:
+      environment: prod
+      image_tag: 0.0.${{ github.run_number }}
+      gcp_project_id: "dhomotic"
+      gcp_app_name: "meal-plan-service"
+      cloud_run_region: "europe-west1"
+      env_vars_string: "NODE_ENV=production"  # uniquement les variables non sensibles
+      cloud_run_service_account: "api-meal-plan-service@dhomotic.iam.gserviceaccount.com"
+    secrets:
+      SERVICE_ACCOUNT_KEY: ${{ secrets.SERVICE_ACCOUNT_KEY }}
+      API_KEY: ${{ secrets.API_KEY }}
