@@ -17,4 +17,4 @@ jobs:
       cloud_run_service_account: "api-meal-plan-service@dhomotic.iam.gserviceaccount.com"
     secrets:
       SERVICE_ACCOUNT_KEY: ${{ secrets.SERVICE_ACCOUNT_KEY }}
-      API_KEY: ${{ secrets.API_KEY }}
+      ENV_VAR_API_KEY: ${{ secrets.API_KEY }}
