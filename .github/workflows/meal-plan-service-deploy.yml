@@ -8,12 +8,17 @@ on:
 
 jobs:
   deploy:
-    uses: ./.github/workflows/common-deploy-cloud-run.yml
     environment: prod
-    with:
-      environment: prod
-      image_tag: 0.0.${{ github.run_number }}
-      gcp_app_name: "meal-plan-service"
-      cloud_run_region: "europe-west1"
-      env_vars_string: "NODE_ENV=production,API_KEY=${{ secrets.API_KEY }}"
-      cloud_run_service_account: "api-meal-plan-service@${{ secrets.GCP_PROJECT_ID }}.iam.gserviceaccount.com"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Deploy to Cloud Run
+        uses: ./.github/workflows/common-deploy-cloud-run.yml
+        with:
+          environment: prod
+          image_tag: 0.0.${{ github.run_number }}
+          gcp_app_name: "meal-plan-service"
+          cloud_run_region: "europe-west1"
+          env_vars_string: "NODE_ENV=production,API_KEY=${{ secrets.API_KEY }}"
+          cloud_run_service_account: "api-meal-plan-service@${{ secrets.GCP_PROJECT_ID }}.iam.gserviceaccount.com"
