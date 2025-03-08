@@ -3,12 +3,13 @@ on:
   push:
     branches:
       - main
-    paths:
-      - "meal-plan-service/**"
+#    paths:
+#      - "meal-plan-service/**"
 
 jobs:
   deploy:
     environment: prod
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
