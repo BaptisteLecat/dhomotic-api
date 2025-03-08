@@ -9,6 +9,7 @@ on:
 jobs:
   deploy:
     uses: ./.github/workflows/common-deploy-cloud-run.yml
+    environment: prod
     with:
       environment: prod
       image_tag: 0.0.${{ github.run_number }}
