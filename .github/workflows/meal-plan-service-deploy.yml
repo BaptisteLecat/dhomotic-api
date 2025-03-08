@@ -3,8 +3,6 @@ on:
   push:
     branches:
       - main
-#    paths:
-#      - "meal-plan-service/**"
 
 jobs:
   deploy:
@@ -19,7 +17,11 @@ jobs:
         with:
           environment: prod
           image_tag: 0.0.${{ github.run_number }}
+          gcp_project_id: "dhomotic"
           gcp_app_name: "meal-plan-service"
           cloud_run_region: "europe-west1"
-          env_vars_string: "NODE_ENV=production,API_KEY=${{ secrets.API_KEY }}"
-          cloud_run_service_account: "api-meal-plan-service@${{ secrets.GCP_PROJECT_ID }}.iam.gserviceaccount.com"
+          env_vars_string: "NODE_ENV=production"  # uniquement les variables non sensibles
+          cloud_run_service_account: "api-meal-plan-service@dhomotic.iam.gserviceaccount.com"
+        secrets:
+          SERVICE_ACCOUNT_KEY: ${{ secrets.SERVICE_ACCOUNT_KEY }}
+          API_KEY: ${{ secrets.API_KEY }}
