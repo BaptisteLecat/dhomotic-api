@@ -21,6 +21,10 @@ if [ -z "$FILES" ]; then
     exit 1
 fi
 
+#Log la liste des fichiers trouvés
+echo -e "📂 **Fichiers trouvés :**\n"
+echo "$FILES"
+
 PROMPT+="\nVoici le contenu de ces fichiers :\n\n"
 
 # Lit et ajoute le contenu des fichiers au prompt
