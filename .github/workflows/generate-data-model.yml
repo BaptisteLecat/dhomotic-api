@@ -27,5 +27,3 @@ jobs:
           git add diagram.json
           git diff --quiet && git diff --staged --quiet || git commit -m "Update data model graph"
           git push || echo "No changes to push"
-          
-
