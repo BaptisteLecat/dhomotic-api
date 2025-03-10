@@ -1,0 +1,116 @@
+{
+    "TestDataEntity": {
+        "houseId": "3K9fYzgJGlIx4OuQgfmU1YEDn2lb",
+        "weekplanId": "oBLRqG8ygkxx7rHAbIPp",
+        "menuId": "undefined",
+        "mealId": "oBLRqG8ygkxx7rHAbIPp",
+        "user": [
+            {
+                "uid": "3K9fYzgJGlIx4OuQgfmU1YEDn2lb",
+                "email": "alice@gmail.com",
+                "password": "alicealice"
+            }
+        ],
+        "productItems": [
+            {
+                "id": "fSdtdUDVf4tlg6JffP53",
+                "name": "Chocolat"
+            },
+            {
+                "id": "Ju9N0RLqiNz6OicnZZu1",
+                "name": "Poire"
+            }
+        ]
+    },
+    "Weekplan": {
+        "id": "oBLRqG8ygkxx7rHAbIPp",
+        "startDate": "2025-02-24T00:00:00.000Z",
+        "endDate": "2025-03-02T00:00:00.000Z",
+        "createdAt": "2023-12-01T00:00:00.000Z",
+        "cart": [],
+        "menu": []
+    },
+    "CartProduct": {
+        "id": "1",
+        "quantity": 5,
+        "user": {
+            "id": "3K9fYzgJGlIx4OuQgfmU1YEDn2lb",
+            "displayName": "Alice",
+            "email": "alice@gmail.com",
+            "photoURL": "https://example.com/photo.jpg"
+        },
+        "cartProductItem": {
+            "id": "fSdtdUDVf4tlg6JffP53",
+            "name": "Chocolat",
+            "price": 5.0
+        },
+        "checkedAt": "2023-12-01T00:00:00.000Z",
+        "createdAt": "2023-12-01T00:00:00.000Z"
+    },
+    "Menu": {
+        "id": "menu1",
+        "weekDayIndex": 1,
+        "daySliceIndex": 0,
+        "createdAt": "2023-12-01T00:00:00.000Z",
+        "menuMeals": []
+    },
+    "MenuMeal": {
+        "id": "menuMeal1",
+        "user": {
+            "id": "3K9fYzgJGlIx4OuQgfmU1YEDn2lb",
+            "displayName": "Alice",
+            "email": "alice@gmail.com",
+            "photoURL": "https://example.com/photo.jpg"
+        },
+        "meal": {
+            "id": "meal1",
+            "name": "Spaghetti Bolognese",
+            "description": "Delicious Italian pasta with a rich bolognese sauce.",
+            "mealProduct": []
+        },
+        "createdAt": "2023-12-01T00:00:00.000Z"
+    },
+    "AuthUser": {
+        "id": "3K9fYzgJGlIx4OuQgfmU1YEDn2lb",
+        "role": "admin",
+        "disabled": false
+    },
+    "User": {
+        "uid": "3K9fYzgJGlIx4OuQgfmU1YEDn2lb",
+        "displayName": "Alice",
+        "email": "alice@gmail.com",
+        "emailVerified": true,
+        "photoURL": "https://example.com/photo.jpg",
+        "houseId": "3K9fYzgJGlIx4OuQgfmU1YEDn2lb"
+    },
+    "NestedUser": {
+        "id": "3K9fYzgJGlIx4OuQgfmU1YEDn2lb",
+        "displayName": "Alice",
+        "email": "alice@gmail.com",
+        "photoURL": "https://example.com/photo.jpg"
+    },
+    "MealProductItem": {
+        "id": "fSdtdUDVf4tlg6JffP53",
+        "name": "Chocolat"
+    },
+    "Meal": {
+        "id": "meal1",
+        "name": "Spaghetti Bolognese",
+        "description": "Delicious Italian pasta with a rich bolognese sauce.",
+        "mealProduct": []
+    },
+    "MealProduct": {
+        "id": "1",
+        "quantity": 2,
+        "mealProductItem": {
+            "id": "fSdtdUDVf4tlg6JffP53",
+            "name": "Chocolat"
+        },
+        "createdAt": "2023-12-01T00:00:00.000Z"
+    },
+    "ProductItem": {
+        "id": "fSdtdUDVf4tlg6JffP53",
+        "name": "Chocolat",
+        "price": 5.0
+    }
+}
