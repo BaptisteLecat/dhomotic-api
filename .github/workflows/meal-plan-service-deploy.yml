@@ -1,8 +1,10 @@
-name: Deploy Meal Plan Service
+name: (Meal Plan Service) Deploy
 on:
   push:
     branches:
       - main
+    paths:
+      - 'meal-plan-service/**'
 
 jobs:
   deploy:

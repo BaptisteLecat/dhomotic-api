@@ -1,0 +1,19 @@
+name: (Meal Plan Service) Continuous Integration
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'meal-plan-service/**'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'meal-plan-service/**'
+
+jobs:
+  ci:
+    uses: ./.github/workflows/common-ci.yml
+    with:
+      gcp_project_id: "dhomotic"
+      gcp_app_name: "meal-plan-service"
