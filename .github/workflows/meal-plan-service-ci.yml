@@ -12,7 +12,7 @@ on:
       - 'meal-plan-service/**'
 
 jobs:
-  deploy:
+  ci:
     uses: ./.github/workflows/common-ci.yml
     with:
       gcp_project_id: "dhomotic"

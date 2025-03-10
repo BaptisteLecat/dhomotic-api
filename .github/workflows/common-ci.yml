@@ -10,7 +10,28 @@ on:
         type: string
 
 jobs:
-  test-e2e-unit-codecov:
+  unit-tests:
+    if: github.event_name != 'push' && github.ref != 'refs/heads/main'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./${{ inputs.gcp_app_name }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Use NPM to install dependencies
+        uses: actions/setup-node@v1
+        with:
+          node-version: "20.x"
+      - run: npm install
+
+      - name: Build application
+        run: npm run build
+
+      - name: Run tests
+        run: npm run test:unit
+  e2e-tests:
+    if: github.event_name != 'push' && github.ref != 'refs/heads/main'
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -21,17 +42,6 @@ jobs:
       PROJECT_ID: ${{ inputs.gcp_project_id }}
     steps:
       - uses: actions/checkout@v2
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
-
-      - name: Remove ::1 from /etc/hosts
-        run: |
-          sudo cp /etc/hosts /etc/hosts.bak
-          sudo grep -v '::1' /etc/hosts.bak | sudo tee /etc/hosts
 
       - name: Use NPM to install dependencies
         uses: actions/setup-node@v1
@@ -47,10 +57,37 @@ jobs:
           curl -sL https://firebase.tools | bash
 
       - name: Run tests
-        run: npm run firebase:emulator:ci
+        run: npm run test:e2e
+  coverage:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./${{ inputs.gcp_app_name }}
+    env:
+      NODE_ENV: development
+      API_KEY: "api_key"
+      PROJECT_ID: ${{ inputs.gcp_project_id }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Use NPM to install dependencies
+        uses: actions/setup-node@v1
+        with:
+          node-version: "20.x"
+      - run: npm install
+
+      - name: Build application
+        run: npm run build
+
+      - name: Setup Firebase emulator
+        run: |
+          curl -sL https://firebase.tools | bash
+
+      - name: Run tests
+        run: npm run test:cov
 
       - name: Upload coverage to Codecov
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: codecov/codecov-action@v4.0.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
