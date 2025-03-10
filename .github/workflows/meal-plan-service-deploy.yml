@@ -7,8 +7,13 @@ on:
       - 'meal-plan-service/**'
 
 jobs:
+  ci-codecov:
+    uses: ./.github/workflows/common-ci.yml
+    with:
+      gcp_project_id: "dhomotic"
+      gcp_app_name: "meal-plan-service"
   deploy:
-    needs: ci
+    needs: ci-codecov
     uses: ./.github/workflows/common-deploy-cloud-run.yml
     with:
       environment: prod
