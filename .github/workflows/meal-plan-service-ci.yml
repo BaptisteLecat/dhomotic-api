@@ -3,6 +3,13 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'meal-plan-service/**'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'meal-plan-service/**'
 
 jobs:
   deploy:
