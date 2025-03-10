@@ -1,4 +1,4 @@
-name: Deploy Meal Plan Service
+name: (Meal Plan Service) Deploy
 on:
   push:
     branches:
