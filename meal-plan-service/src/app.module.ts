@@ -13,8 +13,7 @@ import {MealModule} from "./modules/meal/meal.module";
 @Module({
     imports: [
         ConfigModule.forRoot({
-            isGlobal: true,
-            envFilePath: '.env'
+            isGlobal: true
         }),
         AuthModule,
         WeekplanModule,
