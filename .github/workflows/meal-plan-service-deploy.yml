@@ -8,6 +8,7 @@ on:
 
 jobs:
   deploy:
+    needs: ci
     uses: ./.github/workflows/common-deploy-cloud-run.yml
     with:
       environment: prod
