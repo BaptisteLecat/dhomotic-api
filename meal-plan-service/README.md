@@ -5,7 +5,7 @@
 
 ## Description
 
-Dhomotic APIs are RESTful APIs
+Dhomotic APIs are RESTful APIs.
 
 ## Requirements
 
