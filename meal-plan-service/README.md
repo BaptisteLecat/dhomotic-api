@@ -5,7 +5,7 @@
 
 ## Description
 
-Dhomotic APIs are RESTful APIs.
+Dhomotic APIs are RESTful APIs. The APIs are built using NestJS, a progressive Node.js framework for building efficient, reliable and scalable server-side applications. The APIs are deployed on Google Cloud Platform using Cloud Run.
 
 ## Requirements
 
