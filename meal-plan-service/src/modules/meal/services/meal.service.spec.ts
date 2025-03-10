@@ -1,6 +1,11 @@
 import {Test, TestingModule} from '@nestjs/testing';
 import {MealService} from './meal.service';
 import {FirebaseProvider} from '../../../providers/firebase.provider';
+import {Firestore, Timestamp} from '@google-cloud/firestore';
+import {MealConverter} from "../converters/meal.converter";
+import {Meal} from "../entities/meal.entity";
+import {MealModule} from "../meal.module";
+import {ConfigModule} from "@nestjs/config";
 
 // Import et initialisation du mock officiel pour @google-cloud/firestore
 const {mockGoogleCloudFirestore} = require('firestore-jest-mock');
@@ -11,10 +16,17 @@ mockGoogleCloudFirestore({
                 id: 'mealId',
                 name: 'mealName',
                 description: 'mealDescription',
-                mealProductItem: [
+                mealProduct: [
                     {
-                        id: 'productItemId',
-                        name: 'productItemName',
+                        id: 'mealProductId',
+                        quantity: 1,
+                        createdAt: Timestamp.now(),
+                        mealProductItem:
+                            {
+                                id: 'productItemId',
+                                name: 'productItemName',
+                            },
+
                     },
                 ],
             },
@@ -34,12 +46,6 @@ mockGoogleCloudFirestore({
 
 // Import optionnel pour vérifier les appels sur les collections
 const {mockCollection} = require('firestore-jest-mock/mocks/firestore');
-
-import {Firestore} from '@google-cloud/firestore';
-import {MealConverter} from "../converters/meal.converter";
-import {Meal} from "../entities/meal.entity";
-import {MealModule} from "../meal.module";
-import {ConfigModule} from "@nestjs/config";
 
 describe('MealService', () => {
     let service: MealService;
