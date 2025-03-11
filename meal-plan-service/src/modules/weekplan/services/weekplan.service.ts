@@ -97,8 +97,7 @@ export class WeekplanService {
         //Step 1: Get weekplan
         let weekPlan = await this.findOne(id, houseId);
         if (!weekPlan) {
-            //Step 1.1: Create weekplan if not exist
-            weekPlan = await this.create(new CreateWeekplanDto(), houseId);
+            throw new Error(`Weekplan with id ${id} not found`);
         }
 
         //Step 2: Get the data of the user who add the CartProduct, from the id in the addOrUpdateCartProductDto
