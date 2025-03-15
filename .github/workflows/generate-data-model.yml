@@ -20,18 +20,21 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Run script
+        run: ./generate_data_model_graph.sh
 
       - name: Generate branch name
         id: branch-name
         run: echo "branch=update-data-model-$(date +%Y%m%d-%H%M%S)" >> $GITHUB_OUTPUT
 
-      - name: Run script
-        run: ./generate_data_model_graph.sh
-
       - name: Create new branch and push changes
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
+          git fetch --all
           git checkout -b ${{ steps.branch-name.outputs.branch }}
           git add diagram.json
           git diff --quiet && git diff --staged --quiet || git commit -m "Update data model graph"
@@ -43,6 +46,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
