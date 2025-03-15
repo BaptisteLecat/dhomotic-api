@@ -23,16 +23,16 @@ jobs:
 
       - name: Generate branch name
         id: branch-name
-        run: echo "branch=update-data-model-$(date +%Y%m%d-%H%M%S)" >> $GITHUB_ENV
+        run: echo "branch=update-data-model-$(date +%Y%m%d-%H%M%S)" >> $GITHUB_OUTPUT
 
       - name: Create new branch and push changes
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
-          git checkout -b ${{ env.branch }}
+          git checkout -b ${{ steps.branch-name.outputs.branch }}
           git add diagram.json
           git diff --quiet && git diff --staged --quiet || git commit -m "Update data model graph"
-          git push origin ${{ env.branch }}
+          git push origin ${{ steps.branch-name.outputs.branch }}
 
   create-pull-request:
     needs: generate-data-model  # Attend que le job précédent finisse
