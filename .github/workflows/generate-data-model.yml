@@ -20,10 +20,22 @@ jobs:
       - name: Run script
         run: ./generate_data_model_graph.sh
 
-      - name: Commit and push changes
+      - name: Create new branch and push changes
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
+          BRANCH_NAME="update-data-model-$(date +%Y%m%d-%H%M%S)"
+          git checkout -b $BRANCH_NAME
           git add diagram.json
           git diff --quiet && git diff --staged --quiet || git commit -m "Update data model graph"
-          git push || echo "No changes to push"
+          git push origin $BRANCH_NAME
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: $BRANCH_NAME
+          title: "🔄 Auto-update data model graph"
+          body: "This PR updates the data model graph with the latest changes."
+          base: main
+
