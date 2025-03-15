@@ -5,37 +5,49 @@ on:
       - main
 
 jobs:
-  common-deploy-cloud-run:
+  generate-data-model:
     permissions:
-      contents: write
+      contents: write  # Permission pour push
       id-token: write
     runs-on: ubuntu-latest
     env:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       MODEL: "gpt-4-turbo"
+
+    outputs:
+      branch_name: ${{ steps.branch-name.outputs.branch }}
+
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Run script
-        run: ./generate_data_model_graph.sh
+      - name: Generate branch name
+        id: branch-name
+        run: echo "branch=update-data-model-$(date +%Y%m%d-%H%M%S)" >> $GITHUB_ENV
 
       - name: Create new branch and push changes
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
-          BRANCH_NAME="update-data-model-$(date +%Y%m%d-%H%M%S)"
-          git checkout -b $BRANCH_NAME
+          git checkout -b ${{ env.branch }}
           git add diagram.json
           git diff --quiet && git diff --staged --quiet || git commit -m "Update data model graph"
-          git push origin $BRANCH_NAME
+          git push origin ${{ env.branch }}
+
+  create-pull-request:
+    needs: generate-data-model  # Attend que le job précédent finisse
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          branch: $BRANCH_NAME
+          branch: ${{ needs.generate-data-model.outputs.branch_name }}
           title: "🔄 Auto-update data model graph"
           body: "This PR updates the data model graph with the latest changes."
           base: main
+
 
