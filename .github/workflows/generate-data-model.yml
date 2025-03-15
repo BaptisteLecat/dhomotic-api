@@ -25,6 +25,9 @@ jobs:
         id: branch-name
         run: echo "branch=update-data-model-$(date +%Y%m%d-%H%M%S)" >> $GITHUB_OUTPUT
 
+      - name: Run script
+        run: ./generate_data_model_graph.sh
+
       - name: Create new branch and push changes
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
