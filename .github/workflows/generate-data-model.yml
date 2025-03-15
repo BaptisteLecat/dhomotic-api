@@ -38,7 +38,7 @@ jobs:
           git checkout -b ${{ steps.branch-name.outputs.branch }}
           git add diagram.json
           git diff --quiet && git diff --staged --quiet || git commit -m "Update data model graph"
-          git push origin ${{ steps.branch-name.outputs.branch }}
+          git push --force origin ${{ steps.branch-name.outputs.branch }}
 
   create-pull-request:
     needs: generate-data-model  # Attend que le job précédent finisse
