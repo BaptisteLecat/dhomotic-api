@@ -3,20 +3,23 @@ import {MenuMeal} from "./menuMeal.entity";
 
 export class Menu {
     id: string;
-    weekDayIndex: number;
+    date: Timestamp;
     daySliceIndex: number;
     createdAt: Timestamp;
     menuMeals: MenuMeal[];
 
     public constructor(
         id: string,
-        weekDayIndex: number,
+        date: string | Timestamp,
         daySliceIndex: number,
         createdAt: Timestamp = Timestamp.now(),
         menuMeals: MenuMeal[] = [],
     ) {
         this.id = id;
-        this.weekDayIndex = weekDayIndex;
+        //date can be given like this : '2025-02-24T00:00:00.000Z' but we need to convert it to Timestamp
+        this.date = date instanceof Timestamp
+            ? date
+            : Timestamp.fromDate(new Date(date));
         this.daySliceIndex = daySliceIndex;
         this.createdAt = createdAt;
         this.menuMeals = menuMeals;
@@ -25,7 +28,7 @@ export class Menu {
     static fromFirestoreDocument(id: any, data: any): Menu {
         return new Menu(
             id,
-            data.weekDayIndex,
+            data.date,
             data.daySliceIndex,
             data.createdAt,
             data.menuMeals.map((menuMeal) =>
@@ -37,7 +40,7 @@ export class Menu {
     static fromJson(data: any): Menu {
         return new Menu(
             data.id,
-            data.weekDayIndex,
+            data.date,
             data.daySliceIndex,
             data.createdAt,
             data.menuMeals.map((menuMeal) =>
@@ -49,9 +52,9 @@ export class Menu {
     toFirestoreDocument(): any {
         return {
             id: this.id,
-            createdAt: this.createdAt,
-            weekDayIndex: this.weekDayIndex,
+            date: this.date,
             daySliceIndex: this.daySliceIndex,
+            createdAt: this.createdAt,
             menuMeals: this.menuMeals.map((menuMeal) =>
                 menuMeal.toFirestoreDocument(),
             ),
@@ -61,7 +64,7 @@ export class Menu {
     toJson(): any {
         return {
             id: this.id,
-            weekDayIndex: this.weekDayIndex,
+            date: this.date,
             daySliceIndex: this.daySliceIndex,
             createdAt: this.createdAt,
             menuMeals: this.menuMeals.map((menuMeal) =>

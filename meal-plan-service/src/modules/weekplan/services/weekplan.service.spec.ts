@@ -32,7 +32,7 @@ mockGoogleCloudFirestore({
                             menu: [
                                 {
                                     id: 'menuId0',
-                                    weekDayIndex: 0,
+                                    date: Timestamp.fromDate(new Date("2025-02-24")),
                                     daySliceIndex: 0,
                                     createdAt: Timestamp.now(),
                                     menuMeals: [],
@@ -174,15 +174,21 @@ describe('WeekplanService', () => {
         const updatedWeekplan = await service.findOne(weekplan.id, 'houseId');
         expect(updatedWeekplan.menu).toHaveLength(21);
         expect(updatedWeekplan.menu[0]).toMatchObject({
-            weekDayIndex: 0,
+            date: {
+                _seconds: new Date("2025-03-31").getTime() / 1000,
+            },
             daySliceIndex: 0,
         });
         expect(updatedWeekplan.menu[2]).toMatchObject({
-            weekDayIndex: 0,
+            date: {
+                _seconds: new Date("2025-03-31").getTime() / 1000,
+            },
             daySliceIndex: 2,
         });
         expect(updatedWeekplan.menu[20]).toMatchObject({
-            weekDayIndex: 6,
+            date: {
+                _seconds: new Date("2025-04-06").getTime() / 1000,
+            },
             daySliceIndex: 2,
         });
     });
