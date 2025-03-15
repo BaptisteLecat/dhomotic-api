@@ -82,11 +82,11 @@ export class WeekplanService {
         const days = weekplan.endDateTimestamp.toMillis() - weekplan.startDateTimestamp.toMillis();
         const numberOfDays = days / (1000 * 60 * 60 * 24) + 1;
         for (let i = 0; i < numberOfDays; i++) {
+            const date = new Date(weekplan.startDateTimestamp.toMillis() + i * (1000 * 60 * 60 * 24));
             for (let j = 0; j < 3; j++) {
                 const id = this.firestoreProvider.getFirestore().collection('houses').doc(weekplan.id).collection(WeekplanService.collection).doc().id;
-                const menu = new Menu(id, i, j);
+                const menu = new Menu(id, date.toISOString(), j);
                 menus.push(menu);
-
             }
         }
         return menus;
