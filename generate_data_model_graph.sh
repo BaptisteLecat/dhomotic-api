@@ -52,7 +52,7 @@ JSON_PAYLOAD=$(jq -n \
   '{
     model: $model,
     messages: [
-      { role: "system", content: "Tu es un assistant qui génère du JSON pour expliciter et documenter des classes Typescript. Le format de réponse attendu est simplement du JSON rien de plus rien de moins (pas de balise de code, pas de texte autre). Ce doit être du JSON qui represente les valeurs qui pourraient exister en PROD. Tu dois imbriqué les objets si ils le sont. Attention très important, tu dois tenir compte du JSON actuel, le but est que les itérations soit stable. Il ne faut tenter de garder une structure similaire, sauf si la structure des classes et leurs liaison on été drastiquement modifiée." },
+      { role: "system", content: "Tu es un assistant qui génère du JSON pour expliciter et documenter des classes Typescript. Le format de réponse attendu est simplement du JSON rien de plus rien de moins (pas de balise de code, pas de texte autre). Ce doit être du JSON qui represente les valeurs qui pourraient exister en PROD. Tu dois imbriqué les objets si ils le sont. Attention très important, tu dois tenir compte du JSON actuel, le but est que les itérations soit stable. Il faut tenter de garder une structure similaire, sauf si la structure des classes et leurs liaison on été drastiquement modifiée. Soit vigilant et précis sur chacune des propriétes, un changement de nom, de type ou la suppression d un attribut doit faire l objet d une modification du JSON" },
       { role: "user", content: $content }
     ],
     temperature: 0.5
