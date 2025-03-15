@@ -30,15 +30,29 @@ jobs:
         id: branch-name
         run: echo "branch=update-data-model-$(date +%Y%m%d-%H%M%S)" >> $GITHUB_OUTPUT
 
-      - name: Create new branch and push changes
+      - name: Create new branch
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
-          git fetch --all
+
           git checkout -b ${{ steps.branch-name.outputs.branch }}
+          echo "🛠 Nouvelle branche créée : ${{ steps.branch-name.outputs.branch }}"
+
+      - name: Check for changes and commit
+        run: |
+          git checkout ${{ steps.branch-name.outputs.branch }}
           git add diagram.json
-          git diff --quiet && git diff --staged --quiet || git commit -m "Update data model graph"
-          git push --force origin ${{ steps.branch-name.outputs.branch }}
+          
+          # Vérifie s'il y a des changements
+          if git diff --cached --quiet; then
+            echo "✅ Aucun changement détecté, pas de commit nécessaire."
+            exit 0  # On arrête le job proprement
+          fi
+
+          # S'il y a des changements, commit et push
+          git commit -m "🔄 Auto-update data model graph"
+          git push origin ${{ steps.branch-name.outputs.branch }}
+          echo "✅ Commit et push effectués sur ${{ steps.branch-name.outputs.branch }}"
 
   create-pull-request:
     needs: generate-data-model  # Attend que le job précédent finisse
