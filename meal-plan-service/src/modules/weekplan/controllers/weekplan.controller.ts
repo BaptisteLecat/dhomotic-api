@@ -79,16 +79,17 @@ export class WeekPlanController {
     @ApiBody({type: CreateMenuMealDto})
     async createMenuMeal(@Param('id') id: string, @Param('menuId') menuId: string, @Param('houseId') houseId: string, @Body() createMenuMealDto: CreateMenuMealDto) {
         const menuMeal = await this.weekplanService.createMenuMeal(menuId, id, houseId, createMenuMealDto);
-        //Update the cartProduct Items based on the menuMeal Products
+        // Update the cartProduct Items based on the menuMeal Products
 
         const weekPlan = await this.weekplanService.findOne(id, houseId);
         const cart = weekPlan.cart;
 
         for (const mealProduct of menuMeal.meal.mealProduct) {
+            const existingQuantity = cart.find(cartProduct => cartProduct.cartProductItem.id === mealProduct.mealProductItem.id)?.quantity || 0;
             await this.weekplanService.addOrUpdateCartProduct(id, houseId, {
                 productItemId: mealProduct.mealProductItem.id,
                 userId: createMenuMealDto.userId,
-                quantity: (cart.find(cartProduct => cartProduct.cartProductItem.id === mealProduct.mealProductItem.id)?.quantity || 0) + mealProduct.quantity,
+                quantity: Number(existingQuantity) + Number(mealProduct.quantity),
             });
         }
         return menuMeal;
