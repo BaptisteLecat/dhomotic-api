@@ -6,10 +6,10 @@ import { ThrottlerStorageOptions } from '@nestjs/throttler/dist/throttler-storag
 export class FirebaseThrottlerGuard extends ThrottlerGuard {
     async handleRequest(context: ExecutionContext, limit: number, ttl: number): Promise<boolean> {
         const client = context.switchToWs().getClient()
-        const ip = client.socket.remoteAddress
+        const ip = client.socket.remotAddress
         const key = this.generateKey(context, ip)
         this.storageService.increment(key, ttl);
-        const ttls: Record<string, ThrottlerStorageOptions> =  this.storageService.storage;
+        const ttls: Record<string, ThrottlerStorageOptions> = this.storageService.storage;
         console.log(ttls);
 
         if (ttls[key].totalHits > limit) {
